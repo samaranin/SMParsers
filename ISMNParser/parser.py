@@ -42,30 +42,10 @@ class DataParser:
         """
         Method to get all station objects form all networks
 
-        Station object example:
-        {
-            comment: null
-            depthText: "0.00 - 0.06 m <br>0.25 - 0.25 m <br>"
-            extMetadata: null
-            lat: "-34.780428"
-            lng: "147.140801"
-            maximum: "2010/02/10 01:00:00"
-            minimum: "2010/02/08 00:00:00"
-            sensorText: "Delta-T Devices, ThetaProbe ML2X,<br>"
-            stationID: "2134"
-            station_abbr: "25"
-            station_name: "Station25"
-            variableText: "soil moisture<br>soil temperature<br>precipitation<br>"
-        }
-
         :return: list of station objects or None
         """
         if self.__networks_objects_list is not None:
-            stations_objects = []
-            for network in self.__networks_objects_list:
-                stations_objects.extend(network["Stations"])
-
-            return stations_objects
+            return [station for network in self.__networks_objects_list for station in network["Stations"]]
 
         return None
 
@@ -115,6 +95,23 @@ class DataParser:
     def stations_objects(self):
         """
         Method to get all available stations objects
+
+        Station object example:
+        {
+            comment: null
+            depthText: "0.00 - 0.06 m <br>0.25 - 0.25 m <br>"
+            extMetadata: null
+            lat: "-34.780428"
+            lng: "147.140801"
+            maximum: "2010/02/10 01:00:00"
+            minimum: "2010/02/08 00:00:00"
+            sensorText: "Delta-T Devices, ThetaProbe ML2X,<br>"
+            stationID: "2134"
+            station_abbr: "25"
+            station_name: "Station25"
+            variableText: "soil moisture<br>soil temperature<br>precipitation<br>"
+        }
+
         :return: list of station objects or None
         """
 
