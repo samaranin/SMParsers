@@ -25,6 +25,7 @@ class DataParser:
         self.session = requests.session()
         self.headers = headers if headers is not None else self.DEFAULT_HEADERS
         self.__networks_objects_list = self.__get_networks_data()
+        self.__stations_objects_list = self.__get_stations_data()
 
     def __get_networks_data(self):
         """
@@ -36,6 +37,37 @@ class DataParser:
             return None
 
         return json.loads(request.content.decode("utf-8"))["Networks"]
+
+    def __get_stations_data(self):
+        """
+        Method to get all station objects form all networks
+
+        Station object example:
+        {
+            comment: null
+            depthText: "0.00 - 0.06 m <br>0.25 - 0.25 m <br>"
+            extMetadata: null
+            lat: "-34.780428"
+            lng: "147.140801"
+            maximum: "2010/02/10 01:00:00"
+            minimum: "2010/02/08 00:00:00"
+            sensorText: "Delta-T Devices, ThetaProbe ML2X,<br>"
+            stationID: "2134"
+            station_abbr: "25"
+            station_name: "Station25"
+            variableText: "soil moisture<br>soil temperature<br>precipitation<br>"
+        }
+
+        :return: list of station objects or None
+        """
+        if self.__networks_objects_list is not None:
+            stations_objects = []
+            for network in self.__networks_objects_list:
+                stations_objects.extend(network["Stations"])
+
+            return stations_objects
+
+        return None
 
     @property
     def network_names_list(self):
@@ -52,6 +84,8 @@ class DataParser:
     @property
     def networks_objects(self):
         """
+        Method to get all networks objects wit all inner data
+
         Network object example:
         {
             Stations: [list of station objects],
@@ -77,3 +111,22 @@ class DataParser:
         """
         return self.__networks_objects_list
 
+    @property
+    def stations_objects(self):
+        """
+        Method to get all available stations objects
+        :return: list of station objects or None
+        """
+
+        return self.__stations_objects_list
+
+    @property
+    def stations_names_list(self):
+        """
+        Method to get all available station names
+        :return: list of stations names or None
+        """
+        if self.__stations_objects_list is not None:
+            return [station["station_name"] for station in self.__stations_objects_list]
+
+        return None
