@@ -265,7 +265,11 @@ class ISMNDataParser:
 
     def get_sensor_observation_by_id(self, station_name, sensor_id,
                                      start_date="2017/01/01", end_date="2017/12/31"):
-        pass
+        station_id = self.get_station_id_by_name(station_name)
+        sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
+        variable_id, depth_id = sensor_object["variableId"], sensor_object["depthId"]
+
+        request_url = self.BASE_URL + "".format(station_id, start_date, end_date, depth_id, sensor_id, variable_id)
 
     def get_sensor_observation_by_name(self, station_name, sensor_name,
                                        start_date="2017/01/01", end_date="2017/12/31"):
