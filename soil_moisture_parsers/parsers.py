@@ -1,14 +1,11 @@
-"""
-StationID in Network->Stations
-Start, End -> Dates
-Depth_ID, Sensor_ID, Variable_ID -> Variables(StationID)
-"""
-
 import requests
 import json
 
 
 class ISMNDataParser:
+    """
+    Class for parsing data from ISMN - https://www.geo.tuwien.ac.at/insitu/data_viewer/
+    """
 
     # default headers for request if there was no headers passed to constructor
     DEFAULT_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
