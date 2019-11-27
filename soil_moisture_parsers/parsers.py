@@ -179,7 +179,8 @@ class ISMNDataParser:
         station = self.get_station_object_by_name(station_name)
         return int(station["stationID"])
 
-    def get_sensors_objects_list_for_station_by_id(self, station_id, start_date, end_date):
+    def get_sensors_objects_list_for_station_by_id(self, station_id,
+                                                   start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects list for current station by station ID
         :param station_id: int - station ID
@@ -198,7 +199,8 @@ class ISMNDataParser:
         # return parsed network data
         return json.loads(request.content.decode("utf-8"))["variables"]
 
-    def get_sensors_objects_list_for_station_by_name(self, station_name, start_date, end_date):
+    def get_sensors_objects_list_for_station_by_name(self, station_name,
+                                                     start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects list for current station by station name
         :param station_name: string - station name
@@ -209,7 +211,8 @@ class ISMNDataParser:
         station_id = self.get_station_id_by_name(station_name)
         return self.get_sensors_objects_list_for_station_by_id(station_id, start_date, end_date)
 
-    def get_sensors_names_list_for_station_by_id(self, station_id, start_date, end_date):
+    def get_sensors_names_list_for_station_by_id(self, station_id,
+                                                 start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects names list for current station by station ID
         :param station_id: int - station ID
@@ -220,7 +223,8 @@ class ISMNDataParser:
         sensors_list = self.get_sensors_objects_list_for_station_by_id(station_id, start_date, end_date)
         return [sensor["variableName"] for sensor in sensors_list]
 
-    def get_sensors_names_list_for_station_by_name(self, station_name, start_date, end_date):
+    def get_sensors_names_list_for_station_by_name(self, station_name,
+                                                   start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects names list for current station by station name
         :param station_name: string - station name
@@ -231,3 +235,38 @@ class ISMNDataParser:
         sensors_list = self.get_sensors_objects_list_for_station_by_name(station_name, start_date, end_date)
         return [sensor["variableName"] for sensor in sensors_list]
 
+    def get_sensor_object_by_id(self, station_name, sensor_id):
+        """
+        Method to get sensor data by it`s ID
+        :param station_name: string - station name where sensor placed
+        :param sensor_id: int - sensor ID for station
+        :return: dict - sensor object
+        """
+        sensors = self.get_sensors_objects_list_for_station_by_name(station_name)
+        for sensor in sensors:
+            if int(sensor["sensorId"]) == sensor_id:
+                return sensor
+
+        raise ValueError("Sensor with ID " + sensor_id + " not found!")
+
+    def get_sensor_object_by_name(self, station_name, sensor_name):
+        """
+        Method to get sensor data by it`s name
+        :param station_name: string - station name where sensor placed
+        :param sensor_name: string - sensor name for station
+        :return: dict - sensor object
+        """
+        sensors = self.get_sensors_objects_list_for_station_by_name(station_name)
+        for sensor in sensors:
+            if sensor["variableName"] == sensor_name:
+                return sensor
+
+        raise ValueError("Sensor with name " + sensor_name + " not found!")
+
+    def get_sensor_observation_by_id(self, station_name, sensor_id,
+                                     start_date="2017/01/01", end_date="2017/12/31"):
+        pass
+
+    def get_sensor_observation_by_name(self, station_name, sensor_name,
+                                       start_date="2017/01/01", end_date="2017/12/31"):
+        pass
