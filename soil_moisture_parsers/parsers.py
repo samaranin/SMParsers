@@ -278,8 +278,10 @@ class ISMNDataParser:
         sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
         variable_id, depth_id = sensor_object["variableId"], sensor_object["depthId"]
 
-        # making request for data
-        request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&depth_id={depth_id}&sensor_id={sensor_id}&variable_id={variable_id}"
+        # preparing url for request
+        request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&" \
+            f"depth_id={depth_id}&sensor_id={sensor_id}&variable_id={variable_id}"
+
         request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
         if request.status_code != 200:
             raise ConnectionError("Can not get data from server! Check parameters!")
