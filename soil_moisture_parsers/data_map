@@ -39,3 +39,22 @@ Station object:
     station_name: "Station25"
     variableText: "soil moisture<br>soil temperature<br>precipitation<br>"
 }
+
+VariablesMeta object
+{
+    maxtime: "2019/10/15"
+    mintime: "2018/11/26"
+    originalTimeframeValid: false
+    range: [["-10", "120"], ["-70", "70"], ["0", "100"], ["-70", "70"], ["-70", "70"]]
+    variables: [list of variables objects]
+}
+
+Variable object
+{
+    depthId: "35"
+    quantityName: "soil moisture"
+    sensorId: "159"
+    unit: "m3m-3 * 100"
+    variableId: "8"
+    variableName: "soil_moisture(m3m-3 * 100)_0.00m-0.05m 5TM"
+}
