@@ -19,7 +19,7 @@ def is_networks_exists(func):
     return _decorator
 
 
-class DataParser:
+class ISMNDataParser:
 
     # default headers for request if there was no headers passed to constructor
     DEFAULT_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
