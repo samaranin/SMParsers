@@ -8,17 +8,6 @@ import requests
 import json
 
 
-def check_network_data_existence(func):
-    """
-    Decorator to check is networks data exists
-    """
-    def _decorator(self, *args, **kwargs):
-        if getattr(self, '_networks_objects_list') is not None:
-            return func(self, *args, **kwargs)
-        raise ValueError("Networks or stations data not found!")
-    return _decorator
-
-
 class ISMNDataParser:
 
     # default headers for request if there was no headers passed to constructor
@@ -60,7 +49,6 @@ class ISMNDataParser:
         # return parsed network data
         return json.loads(request.content.decode("utf-8"))["Networks"]
 
-    @check_network_data_existence
     def __get_stations_data(self):
         """
         Method to get all station objects form all networks
@@ -70,7 +58,6 @@ class ISMNDataParser:
         return [station for network in self._networks_objects_list for station in network["Stations"]]
 
     @property
-    @check_network_data_existence
     def network_names_list(self):
         """
         Method to get list of networks names from ISMN
@@ -79,7 +66,6 @@ class ISMNDataParser:
         return [network_object["networkID"] for network_object in self._networks_objects_list]
 
     @property
-    @check_network_data_existence
     def networks_objects(self):
         """
         Method to get all networks objects wit all inner data
@@ -110,7 +96,6 @@ class ISMNDataParser:
         return self._networks_objects_list
 
     @property
-    @check_network_data_existence
     def stations_objects(self):
         """
         Method to get all available stations objects
@@ -137,7 +122,6 @@ class ISMNDataParser:
         return self._stations_objects_list
 
     @property
-    @check_network_data_existence
     def stations_names_list(self):
         """
         Method to get all available station names
@@ -145,7 +129,6 @@ class ISMNDataParser:
         """
         return [station["station_name"] for station in self._stations_objects_list]
 
-    @check_network_data_existence
     def get_network_object_by_name(self, network_name):
         """
         Method to get network object using name
@@ -158,7 +141,6 @@ class ISMNDataParser:
 
         raise ValueError("Not found network with name '" + network_name + "'")
 
-    @check_network_data_existence
     def get_station_object_by_name(self, station_name):
         """
         Method to get station object by name
@@ -171,7 +153,6 @@ class ISMNDataParser:
 
         raise ValueError("Not found station with name '" + station_name + "'")
 
-    @check_network_data_existence
     def get_stations_objects_list_for_network(self, network_name):
         """
         Method to get list of station objects for this network
@@ -180,7 +161,6 @@ class ISMNDataParser:
         """
         return self.get_network_object_by_name(network_name)["Stations"]
 
-    @check_network_data_existence
     def get_stations_names_list_for_network(self, network_name):
         """
         Method to get list of station names for this network
@@ -190,7 +170,6 @@ class ISMNDataParser:
         network = self.get_stations_objects_list_for_network(network_name)
         return [station["station_name"] for station in network]
 
-    @check_network_data_existence
     def get_station_id_by_name(self, station_name):
         """
         Method to get station ID for this station name
@@ -200,7 +179,6 @@ class ISMNDataParser:
         station = self.get_station_object_by_name(station_name)
         return int(station["stationID"])
 
-    @check_network_data_existence
     def get_sensors_objects_list_for_station_by_id(self, station_id, start_date, end_date):
         """
         Method to get sensors objects list for current station by station ID
@@ -220,7 +198,6 @@ class ISMNDataParser:
         # return parsed network data
         return json.loads(request.content.decode("utf-8"))["variables"]
 
-    @check_network_data_existence
     def get_sensors_objects_list_for_station_by_name(self, station_name, start_date, end_date):
         """
         Method to get sensors objects list for current station by station name
@@ -232,7 +209,6 @@ class ISMNDataParser:
         station_id = self.get_station_id_by_name(station_name)
         return self.get_sensors_objects_list_for_station_by_id(station_id, start_date, end_date)
 
-    @check_network_data_existence
     def get_sensors_names_list_for_station_by_id(self, station_id, start_date, end_date):
         """
         Method to get sensors objects names list for current station by station ID
@@ -244,7 +220,6 @@ class ISMNDataParser:
         sensors_list = self.get_sensors_objects_list_for_station_by_id(station_id, start_date, end_date)
         return [sensor["variableName"] for sensor in sensors_list]
 
-    @check_network_data_existence
     def get_sensors_names_list_for_station_by_name(self, station_name, start_date, end_date):
         """
         Method to get sensors objects names list for current station by station name
@@ -255,3 +230,4 @@ class ISMNDataParser:
         """
         sensors_list = self.get_sensors_objects_list_for_station_by_name(station_name, start_date, end_date)
         return [sensor["variableName"] for sensor in sensors_list]
+
