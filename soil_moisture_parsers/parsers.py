@@ -8,17 +8,6 @@ import requests
 import json
 
 
-def is_networks_exists(func):
-    """
-    Decorator to check is networks data exists
-    """
-    def _decorator(self, *args, **kwargs):
-        if getattr(self, '_networks_objects_list') is not None:
-            return func(self, *args, **kwargs)
-        raise ValueError("Networks or stations data not found!")
-    return _decorator
-
-
 class ISMNDataParser:
 
     # default headers for request if there was no headers passed to constructor
@@ -60,7 +49,6 @@ class ISMNDataParser:
         # return parsed network data
         return json.loads(request.content.decode("utf-8"))["Networks"]
 
-    @is_networks_exists
     def __get_stations_data(self):
         """
         Method to get all station objects form all networks
@@ -70,7 +58,6 @@ class ISMNDataParser:
         return [station for network in self._networks_objects_list for station in network["Stations"]]
 
     @property
-    @is_networks_exists
     def network_names_list(self):
         """
         Method to get list of networks names from ISMN
@@ -79,7 +66,6 @@ class ISMNDataParser:
         return [network_object["networkID"] for network_object in self._networks_objects_list]
 
     @property
-    @is_networks_exists
     def networks_objects(self):
         """
         Method to get all networks objects wit all inner data
@@ -110,7 +96,6 @@ class ISMNDataParser:
         return self._networks_objects_list
 
     @property
-    @is_networks_exists
     def stations_objects(self):
         """
         Method to get all available stations objects
@@ -137,7 +122,6 @@ class ISMNDataParser:
         return self._stations_objects_list
 
     @property
-    @is_networks_exists
     def stations_names_list(self):
         """
         Method to get all available station names
@@ -145,7 +129,6 @@ class ISMNDataParser:
         """
         return [station["station_name"] for station in self._stations_objects_list]
 
-    @is_networks_exists
     def get_network_object_by_name(self, network_name):
         """
         Method to get network object using name
@@ -158,7 +141,6 @@ class ISMNDataParser:
 
         raise ValueError("Not found network with name '" + network_name + "'")
 
-    @is_networks_exists
     def get_station_object_by_name(self, station_name):
         """
         Method to get station object by name
@@ -171,20 +153,14 @@ class ISMNDataParser:
 
         raise ValueError("Not found station with name '" + station_name + "'")
 
-    @is_networks_exists
     def get_stations_objects_list_for_network(self, network_name):
         """
         Method to get list of station objects for this network
         :param network_name: string - network name
         :return: list of dicts - station objects or None
         """
-        network = self.get_network_object_by_name(network_name)
-        if network is None:
-            raise ValueError("Not found network with name '" + network_name + "'")
+        return self.get_network_object_by_name(network_name)["Stations"]
 
-        return network["Stations"]
-
-    @is_networks_exists
     def get_stations_names_list_for_network(self, network_name):
         """
         Method to get list of station names for this network
@@ -192,12 +168,8 @@ class ISMNDataParser:
         :return: list of strings - station names or None
         """
         network = self.get_stations_objects_list_for_network(network_name)
-        if network is None:
-            raise ValueError("Not found network with name '" + network_name + "'")
-
         return [station["station_name"] for station in network]
 
-    @is_networks_exists
     def get_station_id_by_name(self, station_name):
         """
         Method to get station ID for this station name
@@ -205,15 +177,12 @@ class ISMNDataParser:
         :return: int - station ID
         """
         station = self.get_station_object_by_name(station_name)
-        if station is None:
-            raise ValueError("Not found station with name '" + station_name + "'")
-
         return int(station["stationID"])
 
-    @is_networks_exists
-    def get_sensors_list_for_station_by_id(self, station_id, start_date, end_date):
+    def get_sensors_objects_list_for_station_by_id(self, station_id,
+                                                   start_date="2017/01/01", end_date="2017/12/31"):
         """
-        Method to get sensors objects list for current station
+        Method to get sensors objects list for current station by station ID
         :param station_id: int - station ID
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
@@ -230,17 +199,78 @@ class ISMNDataParser:
         # return parsed network data
         return json.loads(request.content.decode("utf-8"))["variables"]
 
-    @is_networks_exists
-    def get_sensors_list_for_station_by_name(self, station_name, start_date, end_date):
+    def get_sensors_objects_list_for_station_by_name(self, station_name,
+                                                     start_date="2017/01/01", end_date="2017/12/31"):
         """
-        Method to get sensors objects list for current station
+        Method to get sensors objects list for current station by station name
         :param station_name: string - station name
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
         :return: list of dicts - sensors objects
         """
         station_id = self.get_station_id_by_name(station_name)
-        if station_id is None:
-            raise ValueError("Not found station with name '" + station_name + "'")
+        return self.get_sensors_objects_list_for_station_by_id(station_id, start_date, end_date)
 
-        return self.get_sensors_list_for_station_by_id(station_id, start_date, end_date)
+    def get_sensors_names_list_for_station_by_id(self, station_id,
+                                                 start_date="2017/01/01", end_date="2017/12/31"):
+        """
+        Method to get sensors objects names list for current station by station ID
+        :param station_id: int - station ID
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: list of strings - sensors names
+        """
+        sensors_list = self.get_sensors_objects_list_for_station_by_id(station_id, start_date, end_date)
+        return [sensor["variableName"] for sensor in sensors_list]
+
+    def get_sensors_names_list_for_station_by_name(self, station_name,
+                                                   start_date="2017/01/01", end_date="2017/12/31"):
+        """
+        Method to get sensors objects names list for current station by station name
+        :param station_name: string - station name
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: list of strings - sensors names
+        """
+        sensors_list = self.get_sensors_objects_list_for_station_by_name(station_name, start_date, end_date)
+        return [sensor["variableName"] for sensor in sensors_list]
+
+    def get_sensor_object_by_id(self, station_name, sensor_id):
+        """
+        Method to get sensor data by it`s ID
+        :param station_name: string - station name where sensor placed
+        :param sensor_id: int - sensor ID for station
+        :return: dict - sensor object
+        """
+        sensors = self.get_sensors_objects_list_for_station_by_name(station_name)
+        for sensor in sensors:
+            if int(sensor["sensorId"]) == sensor_id:
+                return sensor
+
+        raise ValueError("Sensor with ID " + sensor_id + " not found!")
+
+    def get_sensor_object_by_name(self, station_name, sensor_name):
+        """
+        Method to get sensor data by it`s name
+        :param station_name: string - station name where sensor placed
+        :param sensor_name: string - sensor name for station
+        :return: dict - sensor object
+        """
+        sensors = self.get_sensors_objects_list_for_station_by_name(station_name)
+        for sensor in sensors:
+            if sensor["variableName"] == sensor_name:
+                return sensor
+
+        raise ValueError("Sensor with name " + sensor_name + " not found!")
+
+    def get_sensor_observation_by_id(self, station_name, sensor_id,
+                                     start_date="2017/01/01", end_date="2017/12/31"):
+        station_id = self.get_station_id_by_name(station_name)
+        sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
+        variable_id, depth_id = sensor_object["variableId"], sensor_object["depthId"]
+
+        request_url = self.BASE_URL + "".format(station_id, start_date, end_date, depth_id, sensor_id, variable_id)
+
+    def get_sensor_observation_by_name(self, station_name, sensor_name,
+                                       start_date="2017/01/01", end_date="2017/12/31"):
+        pass
