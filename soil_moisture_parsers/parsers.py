@@ -18,10 +18,10 @@ class ISMNDataParser:
     NETWORKS_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/station_details/network_station_details.json"
 
     # base url for sensors data requests
-    BASE_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_get_variable_list.php"
+    SENSOR_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_get_variable_list.php"
 
-    DATA_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_load_variable.php?" \
-               "station_id=375&start=2012%2F01%2F01&end=2013%2F01%2F01&depth_id=35&sensor_id=6&variable_id=8"
+    # base url for observations data requests
+    DATA_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_load_variable.php"
 
     def __init__(self, headers=None):
         # creating new session on object creation
@@ -189,7 +189,7 @@ class ISMNDataParser:
         :return: list of dicts - sensors objects
         """
         # generating request url based on parameters
-        request_url = self.BASE_URL + "?station_id={0}&start={1}&end={2}".format(station_id, start_date, end_date)
+        request_url = self.SENSOR_URL + f"?station_id={station_id}&start={start_date}&end={end_date}"
         # making request to server
         request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
         # if there was no response - raise error
@@ -244,7 +244,7 @@ class ISMNDataParser:
         """
         sensors = self.get_sensors_objects_list_for_station_by_name(station_name)
         for sensor in sensors:
-            if int(sensor["sensorId"]) == sensor_id:
+            if sensor["sensorId"] == str(sensor_id):
                 return sensor
 
         raise ValueError("Sensor with ID " + sensor_id + " not found!")
@@ -265,12 +265,38 @@ class ISMNDataParser:
 
     def get_sensor_observation_by_id(self, station_name, sensor_id,
                                      start_date="2017/01/01", end_date="2017/12/31"):
+        """
+        Method to get observation data for sensor in station by sensor ID
+        :param station_name: string - station name
+        :param sensor_id: int - sensor ID
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: dict - {"dates": list of observation dates, "observation": list of observations}
+        """
+        # gather all data we need for request
         station_id = self.get_station_id_by_name(station_name)
         sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
         variable_id, depth_id = sensor_object["variableId"], sensor_object["depthId"]
 
-        request_url = self.BASE_URL + "".format(station_id, start_date, end_date, depth_id, sensor_id, variable_id)
+        # making request for data
+        request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&depth_id={depth_id}&sensor_id={sensor_id}&variable_id={variable_id}"
+        request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
+        if request.status_code != 200:
+            raise ConnectionError("Can not get data from server! Check parameters!")
+
+        # preparing data
+        observation_data = json.loads(request.content.decode("utf-8"))
+        return {"dates": observation_data[0], "observations": observation_data[1]}
 
     def get_sensor_observation_by_name(self, station_name, sensor_name,
                                        start_date="2017/01/01", end_date="2017/12/31"):
-        pass
+        """
+        Method to get observation data for sensor in station by sensor name
+        :param station_name:  string - station name
+        :param sensor_name: string - sensor name
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: dict - {"dates": list of observation dates, "observation": list of observations}
+        """
+        sensor_id = self.get_sensor_object_by_name(station_name, sensor_name)["sensorId"]
+        return self.get_sensor_observation_by_id(station_name, sensor_id, start_date, end_date)
