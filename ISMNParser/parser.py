@@ -76,7 +76,6 @@ class DataParser:
         """
         return [network_object["networkID"] for network_object in self._networks_objects_list]
 
-
     @property
     @is_networks_exists
     def networks_objects(self):
@@ -95,7 +94,7 @@ class DataParser:
             network_depths: "0.00 - 0.05 m <br>0.00 - 0.06 m <br>0.25 - 0.25 m <br>"
             network_op_end: "2010-09-26"
             network_op_start: "2010-01-18"
-            network_reference: "Peischl, S., Walker, J. P., Rüdiger, C., Ye, N., Kerr, Y. H., Kim, E., Bandara, R., and Allahmoradi, M.: The AACES field experiments: SMOS calibration and validation across the Murrumbidgee River catchment, Hydrology and Earth System Sciences, Discuss., 9, 2763-2795, doi:10.5194/hessd-9-2763-2012, 2012"
+            network_reference: "Peischl, S., Walker, J. P..."
             network_sensors: "ThetaProbe ML2X,<br>"
             network_status: "inactive"
             network_type: "project"
