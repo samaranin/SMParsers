@@ -15,7 +15,7 @@ def is_networks_exists(func):
     def _decorator(self, *args, **kwargs):
         if getattr(self, '_networks_objects_list') is not None:
             return func(self, *args, **kwargs)
-        return None
+        raise ValueError("Networks or stations data not found!")
     return _decorator
 
 
@@ -28,8 +28,8 @@ class DataParser:
     # url to get all networks data
     NETWORKS_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/station_details/network_station_details.json"
 
-    VARS_LINK = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_get_variable_list.php?" \
-                "station_id=375&start=2018%2F11%2F26&end=2019%2F11%2F26"
+    # base url for sensors data requests
+    BASE_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_get_variable_list.php"
 
     DATA_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_load_variable.php?" \
                "station_id=375&start=2012%2F01%2F01&end=2013%2F01%2F01&depth_id=35&sensor_id=6&variable_id=8"
@@ -39,6 +39,8 @@ class DataParser:
         self.session = requests.session()
         # setting headers for request - passed to constructor or default headers
         self.headers = headers if headers is not None else self.DEFAULT_HEADERS
+        # set requests timeout
+        self.request_timeout = 20
         # fetching all networks data on object initialization
         self._networks_objects_list = self.__get_networks_data()
         # getting all stations data from all networks
@@ -49,11 +51,11 @@ class DataParser:
         Method to get all networks objects
         :return: list of dicts - networks with all inner data (stations, etc) or None
         """
-        # making request to ISMN server to get all networks data with 20 seconds timeout
-        request = self.session.get(self.NETWORKS_URL, headers=self.headers, timeout=20)
-        # if request wasn't successful - return None
+        # making request to ISMN server to get all networks data with timeout
+        request = self.session.get(self.NETWORKS_URL, headers=self.headers, timeout=self.request_timeout)
+        # if request wasn't successful - raise error
         if request.status_code != 200:
-            return None
+            raise ConnectionError("Can not connect to server!")
 
         # return parsed network data
         return json.loads(request.content.decode("utf-8"))["Networks"]
@@ -154,7 +156,7 @@ class DataParser:
             if network_name == network["networkID"]:
                 return network
 
-        return None
+        raise ValueError("Not found network with name '" + network_name + "'")
 
     @is_networks_exists
     def get_station_object_by_name(self, station_name):
@@ -167,7 +169,7 @@ class DataParser:
             if station_name == station["station_name"]:
                 return station
 
-        return None
+        raise ValueError("Not found station with name '" + station_name + "'")
 
     @is_networks_exists
     def get_stations_objects_list_for_network(self, network_name):
@@ -177,7 +179,10 @@ class DataParser:
         :return: list of dicts - station objects or None
         """
         network = self.get_network_object_by_name(network_name)
-        return network["Stations"] if network is not None else None
+        if network is None:
+            raise ValueError("Not found network with name '" + network_name + "'")
+
+        return network["Stations"]
 
     @is_networks_exists
     def get_stations_names_list_for_network(self, network_name):
@@ -187,7 +192,10 @@ class DataParser:
         :return: list of strings - station names or None
         """
         network = self.get_stations_objects_list_for_network(network_name)
-        return [station["station_name"] for station in network] if network is not None else None
+        if network is None:
+            raise ValueError("Not found network with name '" + network_name + "'")
+
+        return [station["station_name"] for station in network]
 
     @is_networks_exists
     def get_station_id_by_name(self, station_name):
@@ -197,4 +205,42 @@ class DataParser:
         :return: int - station ID
         """
         station = self.get_station_object_by_name(station_name)
-        return int(station["stationID"]) if station is not None else None
+        if station is None:
+            raise ValueError("Not found station with name '" + station_name + "'")
+
+        return int(station["stationID"])
+
+    @is_networks_exists
+    def get_sensors_list_for_station_by_id(self, station_id, start_date, end_date):
+        """
+        Method to get sensors objects list for current station
+        :param station_id: int - station ID
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: list of dicts - sensors objects
+        """
+        # generating request url based on parameters
+        request_url = self.BASE_URL + "?station_id={0}&start={1}&end={2}".format(station_id, start_date, end_date)
+        # making request to server
+        request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
+        # if there was no response - raise error
+        if request.status_code != 200:
+            raise ConnectionError("Can not connect to server! Check input data!")
+
+        # return parsed network data
+        return json.loads(request.content.decode("utf-8"))["variables"]
+
+    @is_networks_exists
+    def get_sensors_list_for_station_by_name(self, station_name, start_date, end_date):
+        """
+        Method to get sensors objects list for current station
+        :param station_name: string - station name
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: list of dicts - sensors objects
+        """
+        station_id = self.get_station_id_by_name(station_name)
+        if station_id is None:
+            raise ValueError("Not found station with name '" + station_name + "'")
+
+        return self.get_sensors_list_for_station_by_id(station_id, start_date, end_date)
