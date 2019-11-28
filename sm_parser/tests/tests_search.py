@@ -12,7 +12,7 @@ class TestSearch(unittest.TestCase):
         self.default_station_id = 8
 
     def tests_get_network_by_name(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             self.ismn_parser.get_network_object_by_name(self.default_station_id)
 
         with self.assertRaises(ValueError):
@@ -23,7 +23,7 @@ class TestSearch(unittest.TestCase):
         self.assertIsInstance(network, dict)
 
     def tests_get_station_by_name(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             self.ismn_parser.get_station_object_by_name(self.default_station_id)
 
         with self.assertRaises(ValueError):

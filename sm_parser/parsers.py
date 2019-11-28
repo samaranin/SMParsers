@@ -135,14 +135,12 @@ class ISMNDataParser:
         :param network_name: string - network name
         :return: dict - network object with this name or None
         """
-        if not isinstance(network_name, str):
-            raise TypeError("Network name must be string, not" + type(network_name))
-
+        name = str(network_name)
         for network in self.__networks_objects_list:
-            if network_name == network["networkID"]:
+            if name == network["networkID"]:
                 return network
 
-        raise ValueError("Not found network with name '" + network_name + "'")
+        raise ValueError("Not found network with name '" + name + "'")
 
     def get_station_object_by_name(self, station_name):
         """
@@ -150,14 +148,12 @@ class ISMNDataParser:
         :param station_name: string - station name
         :return: dict - station object with this name or None
         """
-        if not isinstance(station_name, str):
-            raise TypeError("Network name must be string, not" + type(station_name))
-
+        name = str(station_name)
         for station in self.__stations_objects_list:
-            if station_name == station["station_name"]:
+            if name == station["station_name"]:
                 return station
 
-        raise ValueError("Not found station with name '" + station_name + "'")
+        raise ValueError("Not found station with name '" + name + "'")
 
     def get_stations_objects_list_for_network(self, network_name):
         """
