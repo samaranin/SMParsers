@@ -1,14 +1,11 @@
-"""
-StationID in Network->Stations
-Start, End -> Dates
-Depth_ID, Sensor_ID, Variable_ID -> Variables(StationID)
-"""
-
 import requests
 import json
 
 
 class ISMNDataParser:
+    """
+    Class for parsing data from ISMN - https://www.geo.tuwien.ac.at/insitu/data_viewer/
+    """
 
     # default headers for request if there was no headers passed to constructor
     DEFAULT_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
@@ -264,13 +261,14 @@ class ISMNDataParser:
         raise ValueError("Sensor with name " + sensor_name + " not found!")
 
     def get_sensor_observation_by_id(self, station_name, sensor_id,
-                                     start_date="2017/01/01", end_date="2017/12/31"):
+                                     start_date="2017/01/01", end_date="2017/12/31", normalize=True):
         """
         Method to get observation data for sensor in station by sensor ID
         :param station_name: string - station name
         :param sensor_id: int - sensor ID
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
+        :param normalize: bool - use absolute values if True, otherwise - values * 100
         :return: dict - {"dates": list of observation dates, "observation": list of observations}
         """
         # gather all data we need for request
@@ -278,25 +276,30 @@ class ISMNDataParser:
         sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
         variable_id, depth_id = sensor_object["variableId"], sensor_object["depthId"]
 
-        # making request for data
-        request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&depth_id={depth_id}&sensor_id={sensor_id}&variable_id={variable_id}"
+        # preparing url for request
+        request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&" \
+            f"depth_id={depth_id}&sensor_id={sensor_id}&variable_id={variable_id}"
+
         request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
         if request.status_code != 200:
             raise ConnectionError("Can not get data from server! Check parameters!")
 
         # preparing data
         observation_data = json.loads(request.content.decode("utf-8"))
-        return {"dates": observation_data[0], "observations": observation_data[1]}
+        observations = [float(obs) for obs in observation_data[1]]
+        observations = [float(obs) / 100 for obs in observation_data[1]] if normalize else observations
+        return {"dates": observation_data[0], "observations": observations}
 
     def get_sensor_observation_by_name(self, station_name, sensor_name,
-                                       start_date="2017/01/01", end_date="2017/12/31"):
+                                       start_date="2017/01/01", end_date="2017/12/31", normalize=True):
         """
         Method to get observation data for sensor in station by sensor name
         :param station_name:  string - station name
         :param sensor_name: string - sensor name
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
+        :param normalize: bool - use absolute values if True, otherwise - values * 100
         :return: dict - {"dates": list of observation dates, "observation": list of observations}
         """
         sensor_id = self.get_sensor_object_by_name(station_name, sensor_name)["sensorId"]
-        return self.get_sensor_observation_by_id(station_name, sensor_id, start_date, end_date)
+        return self.get_sensor_observation_by_id(station_name, sensor_id, start_date, end_date, normalize)
