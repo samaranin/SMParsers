@@ -5,6 +5,12 @@ Use this package to get data from ISMN servers without downloading archives.
 Examples are placed inside ```sm_parser/examples/``` folder.   
 
 ________
+#### Requirements
+```requirements.txt
+requests
+```
+
+
 #### Installation   
 
 To use this package just make 
