@@ -185,11 +185,14 @@ class ISMNDataParser:
                                                    start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects list for current station by station ID
-        :param station_id: int - station ID
+        :param station_id: int or string - station ID
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
         :return: list of dicts - sensors objects
         """
+        if ("/" not in start_date) or ("/" not in end_date):
+            raise ValueError("Start and end dates must be in YYYY/MM/DD format")
+
         # generating request url based on parameters
         request_url = self.SENSOR_URL + f"?station_id={station_id}&start={start_date}&end={end_date}"
         # making request to server

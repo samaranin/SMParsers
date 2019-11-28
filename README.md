@@ -18,3 +18,10 @@ To use this package just make
 git clone https://github.com/samaranin/SMParsers
 ```   
 inside your project repository.   
+_____________
+#### Tests
+
+To run tests use command
+```bash
+./run_tests.sh
+```

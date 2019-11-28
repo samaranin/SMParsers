@@ -20,22 +20,34 @@ class TestInitialization(unittest.TestCase):
         self.assertIsNotNone(self.ismn_parser.request_timeout)
 
     def test_networks_names(self):
-        self.assertIsNotNone(self.ismn_parser.network_names_list)
-        self.assertIsInstance(self.ismn_parser.network_names_list, list)
-        self.assertIn(self.default_network_name, self.ismn_parser.network_names_list)
+        networks = self.ismn_parser.network_names_list
+        self.assertIsNotNone(networks)
+        self.assertIsInstance(networks, list)
+        self.assertIn(self.default_network_name, networks)
+        for network in networks:
+            self.assertIsInstance(network, str)
 
     def test_networks_objects(self):
-        self.assertIsNotNone(any(self.ismn_parser.networks_objects))
-        self.assertIsInstance(self.ismn_parser.networks_objects, list)
+        networks = self.ismn_parser.networks_objects
+        self.assertIsNotNone(networks)
+        self.assertIsInstance(networks, list)
+        for network in networks:
+            self.assertIsInstance(network, dict)
 
     def test_stations_names(self):
-        self.assertIsNotNone(self.ismn_parser.stations_names_list)
-        self.assertIsInstance(self.ismn_parser.stations_names_list, list)
-        self.assertIn(self.default_station_name, self.ismn_parser.stations_names_list)
+        stations = self.ismn_parser.stations_names_list
+        self.assertIsNotNone(stations)
+        self.assertIsInstance(stations, list)
+        self.assertIn(self.default_station_name, stations)
+        for station in stations:
+            self.assertIsInstance(station, str)
 
     def test_stations_objects(self):
-        self.assertIsNotNone(any(self.ismn_parser.stations_objects))
-        self.assertIsInstance(self.ismn_parser.stations_objects, list)
+        stations = self.ismn_parser.stations_objects
+        self.assertIsNotNone(stations)
+        self.assertIsInstance(stations, list)
+        for station in stations:
+            self.assertIsInstance(station, dict)
 
 
 if __name__ == "__main__":
