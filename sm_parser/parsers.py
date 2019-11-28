@@ -22,15 +22,18 @@ class ISMNDataParser:
 
     def __init__(self, headers=None):
         # creating new session on object creation
-        self.session = requests.session()
+        self.__session = requests.session()
         # setting headers for request - passed to constructor or default headers
         self.headers = headers if headers is not None else self.DEFAULT_HEADERS
         # set requests timeout
         self.request_timeout = 20
         # fetching all networks data on object initialization
-        self._networks_objects_list = self.__get_networks_data()
+        self.__networks_objects_list = self.__get_networks_data()
         # getting all stations data from all networks
-        self._stations_objects_list = self.__get_stations_data()
+        self.__stations_objects_list = self.__get_stations_data()
+
+    def __del__(self):
+        self.__session.close()
 
     def __get_networks_data(self):
         """
@@ -38,7 +41,7 @@ class ISMNDataParser:
         :return: list of dicts - networks with all inner data (stations, etc) or None
         """
         # making request to ISMN server to get all networks data with timeout
-        request = self.session.get(self.NETWORKS_URL, headers=self.headers, timeout=self.request_timeout)
+        request = self.__session.get(self.NETWORKS_URL, headers=self.headers, timeout=self.request_timeout)
         # if request wasn't successful - raise error
         if request.status_code != 200:
             raise ConnectionError("Can not connect to server!")
@@ -52,7 +55,7 @@ class ISMNDataParser:
 
         :return: list of dicts - all station objects or None
         """
-        return [station for network in self._networks_objects_list for station in network["Stations"]]
+        return [station for network in self.__networks_objects_list for station in network["Stations"]]
 
     @property
     def network_names_list(self):
@@ -60,7 +63,7 @@ class ISMNDataParser:
         Method to get list of networks names from ISMN
         :return: list of strings - networks names or None
         """
-        return [network_object["networkID"] for network_object in self._networks_objects_list]
+        return [network_object["networkID"] for network_object in self.__networks_objects_list]
 
     @property
     def networks_objects(self):
@@ -90,7 +93,7 @@ class ISMNDataParser:
 
         :return: list of dicts - networks objects or None
         """
-        return self._networks_objects_list
+        return self.__networks_objects_list
 
     @property
     def stations_objects(self):
@@ -116,7 +119,7 @@ class ISMNDataParser:
         :return: list of dicts - station objects or None
         """
 
-        return self._stations_objects_list
+        return self.__stations_objects_list
 
     @property
     def stations_names_list(self):
@@ -124,7 +127,7 @@ class ISMNDataParser:
         Method to get all available station names
         :return: list of strings - stations names or None
         """
-        return [station["station_name"] for station in self._stations_objects_list]
+        return [station["station_name"] for station in self.__stations_objects_list]
 
     def get_network_object_by_name(self, network_name):
         """
@@ -132,11 +135,12 @@ class ISMNDataParser:
         :param network_name: string - network name
         :return: dict - network object with this name or None
         """
-        for network in self._networks_objects_list:
-            if network_name == network["networkID"]:
+        name = str(network_name)
+        for network in self.__networks_objects_list:
+            if name == network["networkID"]:
                 return network
 
-        raise ValueError("Not found network with name '" + network_name + "'")
+        raise ValueError("Not found network with name '" + name + "'")
 
     def get_station_object_by_name(self, station_name):
         """
@@ -144,11 +148,12 @@ class ISMNDataParser:
         :param station_name: string - station name
         :return: dict - station object with this name or None
         """
-        for station in self._stations_objects_list:
-            if station_name == station["station_name"]:
+        name = str(station_name)
+        for station in self.__stations_objects_list:
+            if name == station["station_name"]:
                 return station
 
-        raise ValueError("Not found station with name '" + station_name + "'")
+        raise ValueError("Not found station with name '" + name + "'")
 
     def get_stations_objects_list_for_network(self, network_name):
         """
@@ -180,15 +185,18 @@ class ISMNDataParser:
                                                    start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects list for current station by station ID
-        :param station_id: int - station ID
+        :param station_id: int or string - station ID
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
         :return: list of dicts - sensors objects
         """
+        if ("/" not in start_date) or ("/" not in end_date):
+            raise ValueError("Start and end dates must be in YYYY/MM/DD format")
+
         # generating request url based on parameters
         request_url = self.SENSOR_URL + f"?station_id={station_id}&start={start_date}&end={end_date}"
         # making request to server
-        request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
+        request = self.__session.get(request_url, headers=self.headers, timeout=self.request_timeout)
         # if there was no response - raise error
         if request.status_code != 200:
             raise ConnectionError("Can not connect to server! Check input data!")
@@ -271,6 +279,9 @@ class ISMNDataParser:
         :param normalize: bool - use absolute values if True, otherwise - values * 100
         :return: dict - {"dates": list of observation dates, "observation": list of observations}
         """
+        if ("/" not in start_date) or ("/" not in end_date):
+            raise ValueError("Start and end dates must be in YYYY/MM/DD format")
+
         # gather all data we need for request
         station_id = self.get_station_id_by_name(station_name)
         sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
@@ -280,14 +291,14 @@ class ISMNDataParser:
         request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&" \
             f"depth_id={depth_id}&sensor_id={sensor_id}&variable_id={variable_id}"
 
-        request = self.session.get(request_url, headers=self.headers, timeout=self.request_timeout)
+        request = self.__session.get(request_url, headers=self.headers, timeout=self.request_timeout)
         if request.status_code != 200:
             raise ConnectionError("Can not get data from server! Check parameters!")
 
         # preparing data
         observation_data = json.loads(request.content.decode("utf-8"))
         observations = [float(obs) for obs in observation_data[1]]
-        observations = [float(obs) / 100 for obs in observation_data[1]] if normalize else observations
+        observations = [round(float(obs) / 100, 5) for obs in observation_data[1]] if normalize else observations
         return {"dates": observation_data[0], "observations": observations}
 
     def get_sensor_observation_by_name(self, station_name, sensor_name,
