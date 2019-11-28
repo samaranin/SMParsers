@@ -127,9 +127,17 @@ class TestSearch(unittest.TestCase):
 
     def tests_get_sensor_object_by_id(self):
         with self.assertRaises(ValueError):
-            self.ismn_parser.get_sensors_names_list_for_station_by_name("", "")
+            self.ismn_parser.get_sensor_object_by_id("", "")
 
         sensor = self.ismn_parser.get_sensor_object_by_id(self.default_station_name, self.default_sensor_id)
+        self.assertIsNotNone(sensor)
+        self.assertIsInstance(sensor, dict)
+
+    def tests_get_sensor_object_by_name(self):
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_sensor_object_by_name("", "")
+
+        sensor = self.ismn_parser.get_sensor_object_by_name(self.default_station_name, self.default_sensor_name)
         self.assertIsNotNone(sensor)
         self.assertIsInstance(sensor, dict)
 

@@ -279,6 +279,9 @@ class ISMNDataParser:
         :param normalize: bool - use absolute values if True, otherwise - values * 100
         :return: dict - {"dates": list of observation dates, "observation": list of observations}
         """
+        if ("/" not in start_date) or ("/" not in end_date):
+            raise ValueError("Start and end dates must be in YYYY/MM/DD format")
+
         # gather all data we need for request
         station_id = self.get_station_id_by_name(station_name)
         sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
@@ -295,7 +298,7 @@ class ISMNDataParser:
         # preparing data
         observation_data = json.loads(request.content.decode("utf-8"))
         observations = [float(obs) for obs in observation_data[1]]
-        observations = [float(obs) / 100 for obs in observation_data[1]] if normalize else observations
+        observations = [round(float(obs) / 100, 5) for obs in observation_data[1]] if normalize else observations
         return {"dates": observation_data[0], "observations": observations}
 
     def get_sensor_observation_by_name(self, station_name, sensor_name,
