@@ -1,4 +1,4 @@
-from soil_moisture_parsers.parsers import ISMNDataParser
+from sm_parser.parsers import ISMNDataParser
 
 
 if __name__ == "__main__":
