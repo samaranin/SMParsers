@@ -140,7 +140,7 @@ class ISMNDataParser:
             if name == network["networkID"]:
                 return network
 
-        raise ValueError("Not found network with name '" + name + "'")
+        raise ValueError(f"Not found network with name \'{name}\'")
 
     def get_station_object_by_name(self, station_name):
         """
@@ -153,7 +153,7 @@ class ISMNDataParser:
             if name == station["station_name"]:
                 return station
 
-        raise ValueError("Not found station with name '" + name + "'")
+        raise ValueError(f"Not found station with name \'{name}\'")
 
     def get_stations_objects_list_for_network(self, network_name):
         """
