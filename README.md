@@ -6,7 +6,8 @@ Examples are placed inside ```sm_parser/examples/``` folder.
 
 ________
 #### Requirements
-```requirements.txt
+```text
+python 3.6+   
 requests
 ```
 
