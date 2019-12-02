@@ -1,5 +1,6 @@
 import requests
 import json
+import datetime
 
 
 class ISMNDataParser:
@@ -190,8 +191,14 @@ class ISMNDataParser:
         :param end_date: string - date format YYYY/MM/DD
         :return: list of dicts - sensors objects
         """
-        if ("/" not in start_date) or ("/" not in end_date):
-            raise ValueError("Start and end dates must be in YYYY/MM/DD format")
+        try:
+            start_date_object = datetime.datetime.strptime(start_date, '%Y/%m/%d')
+            end_date_object = datetime.datetime.strptime(end_date, '%Y/%m/%d')
+        except Exception:
+            raise ValueError("Start and end dates must be in YYYY/MM/DD format!")
+
+        if start_date_object > end_date_object:
+            raise ValueError("Start date must be earlier then end date!")
 
         # generating request url based on parameters
         request_url = self.SENSOR_URL + f"?station_id={station_id}&start={start_date}&end={end_date}"
@@ -279,8 +286,14 @@ class ISMNDataParser:
         :param normalize: bool - use absolute values if True, otherwise - values * 100
         :return: dict - {"dates": list of observation dates, "observation": list of observations}
         """
-        if ("/" not in start_date) or ("/" not in end_date):
-            raise ValueError("Start and end dates must be in YYYY/MM/DD format")
+        try:
+            start_date_object = datetime.datetime.strptime(start_date, '%Y/%m/%d')
+            end_date_object = datetime.datetime.strptime(end_date, '%Y/%m/%d')
+        except Exception:
+            raise ValueError("Start and end dates must be in YYYY/MM/DD format!")
+
+        if start_date_object > end_date_object:
+            raise ValueError("Start date must be earlier then end date!")
 
         # gather all data we need for request
         station_id = self.get_station_id_by_name(station_name)
