@@ -51,8 +51,8 @@ class ISMNDataParser:
         try:
             return json.loads(request.content.decode("utf-8"))["Networks"]
         except json.decoder.JSONDecodeError:
-            raise TypeError("Error while server response processing! "
-                            "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
+            raise ValueError("Error while server response processing! "
+                             "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
 
     def __get_stations_data(self):
         """
@@ -216,8 +216,8 @@ class ISMNDataParser:
         try:
             return json.loads(request.content.decode("utf-8"))["variables"]
         except json.decoder.JSONDecodeError:
-            raise TypeError("Error while server response processing! "
-                            "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
+            raise ValueError("Error while server response processing! "
+                             "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
 
     def get_sensors_objects_list_for_station_by_name(self, station_name,
                                                      start_date="2017/01/01", end_date="2017/12/31"):
@@ -320,8 +320,8 @@ class ISMNDataParser:
         try:
             observation_data = json.loads(request.content.decode("utf-8"))
         except json.decoder.JSONDecodeError:
-            raise TypeError("Error while server response processing! "
-                            "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
+            raise ValueError("Error while server response processing! "
+                             "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
 
         observations = [float(obs) for obs in observation_data[1]]
         observations = [round(float(obs) / 100, 5) for obs in observation_data[1]] if normalize else observations

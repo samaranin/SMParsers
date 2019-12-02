@@ -10,6 +10,7 @@ class TestSearch(unittest.TestCase):
         self.default_network_name = "REMEDHUS"
         self.default_station_name = "fraye"
         self.default_station_id = 3506
+        self.default_wrong_id = 125482
         self.default_sensor_id = 8
         self.default_sensor_name = "soil_moisture(m3m-3 * 100)_0.05m ThetaProbe ML2X"
 
@@ -78,6 +79,9 @@ class TestSearch(unittest.TestCase):
             self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_station_id, "", "")
 
         with self.assertRaises(ValueError):
+            self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_wrong_id, "", "")
+
+        with self.assertRaises(ValueError):
             self.ismn_parser.get_sensors_objects_list_for_station_by_id("")
 
         sensors = self.ismn_parser.get_station_id_by_name(self.default_station_id)
@@ -104,6 +108,9 @@ class TestSearch(unittest.TestCase):
             self.ismn_parser.get_sensors_names_list_for_station_by_id(self.default_station_id, "", "")
 
         with self.assertRaises(ValueError):
+            self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_wrong_id, "", "")
+
+        with self.assertRaises(ValueError):
             self.ismn_parser.get_sensors_names_list_for_station_by_id("")
 
         sensors = self.ismn_parser.get_sensors_names_list_for_station_by_id(self.default_station_id)
@@ -128,6 +135,9 @@ class TestSearch(unittest.TestCase):
     def tests_get_sensor_object_by_id(self):
         with self.assertRaises(ValueError):
             self.ismn_parser.get_sensor_object_by_id("", "")
+
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_wrong_id, "", "")
 
         sensor = self.ismn_parser.get_sensor_object_by_id(self.default_station_name, self.default_sensor_id)
         self.assertIsNotNone(sensor)

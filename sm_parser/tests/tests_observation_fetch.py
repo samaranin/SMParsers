@@ -9,11 +9,15 @@ class TestObservations(unittest.TestCase):
         self.ismn_parser = ISMNDataParser()
         self.default_station_name = "fraye"
         self.default_sensor_id = 8
+        self.default_wrong_id = 125482
         self.default_sensor_name = "soil_moisture(m3m-3 * 100)_0.05m ThetaProbe ML2X"
 
     def tests_get_sensor_observations_by_id(self):
         with self.assertRaises(ValueError):
             self.ismn_parser.get_sensor_observation_by_id("", "", "", "")
+
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_sensor_observation_by_id(self.default_station_name, self.default_wrong_id, "", "")
 
         data = self.ismn_parser.get_sensor_observation_by_id(self.default_station_name, self.default_sensor_id)
         self.assertIsNotNone(data)
