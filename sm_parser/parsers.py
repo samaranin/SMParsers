@@ -289,7 +289,7 @@ class ISMNDataParser:
         """
         Method to extract sensor type and sensor depth from sensor name
         :param sensor_name: string - sensor name
-        :return:
+        :return: dict - {"sensor_type": sensor_type, "sensor_depth": sensor_depth}
         """
         if not sensor_name:
             raise ValueError("You need to specify correct sensor name!")

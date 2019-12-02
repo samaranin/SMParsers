@@ -34,6 +34,10 @@ if __name__ == "__main__":
     print(f"Get all data for sensor \'{default_sensor_name}\' in \'{default_station_name}\' station")
     print(parser.get_sensor_object_by_name(default_station_name, default_sensor_name), end="\n\n")
 
+    # get type and depth data from sensor name
+    print(f"Get type and depth sensor \'{default_sensor_name}\'")
+    print(parser.get_sensor_type_and_depth_by_name(default_sensor_name), end="\n\n")
+
     # get observation for sensor on station in date range, also exists same method for ID
     print(f"Get observations for sensor \'{default_sensor_name}\' on \'{default_station_name}\' station "
           f"(start date: \'{default_start_date}\' and end date: \'{default_end_date}\')")
