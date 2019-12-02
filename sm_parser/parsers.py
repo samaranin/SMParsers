@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import re
 
 
 class ISMNDataParser:
@@ -282,6 +283,20 @@ class ISMNDataParser:
                 return sensor
 
         raise ValueError("Sensor with name " + sensor_name + " not found!")
+
+    @staticmethod
+    def get_sensor_type_and_depth_by_name(sensor_name):
+        """
+        Method to extract sensor type and sensor depth from sensor name
+        :param sensor_name: string - sensor name
+        :return:
+        """
+        if not sensor_name:
+            raise ValueError("You need to specify correct sensor name!")
+
+        sensor_type = sensor_name.split("(")[0]
+        sensor_depth = re.search(r"(\d\.\d+[a-z])?[-]?(\d\.\d+[a-z])", sensor_name).group(0)
+        return {"sensor_type": sensor_type, "sensor_depth": sensor_depth}
 
     def get_sensor_observation_by_id(self, station_name, sensor_id,
                                      start_date="2017/01/01", end_date="2017/12/31", normalize=True):

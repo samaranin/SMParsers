@@ -1,4 +1,5 @@
 from sm_parser.parsers import ISMNDataParser
+import re
 
 
 if __name__ == "__main__":
