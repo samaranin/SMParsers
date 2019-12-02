@@ -295,7 +295,7 @@ class ISMNDataParser:
             raise ValueError("You need to specify correct sensor name!")
 
         sensor_type = sensor_name.split("(")[0]
-        sensor_depth = re.search(r"(\d\.\d+[a-z][-]?)+", sensor_name).group(0)
+        sensor_depth = re.search(r"(\d\.\d+[a-z]-?)+", sensor_name).group(0)
         return {"sensor_type": sensor_type, "sensor_depth": sensor_depth}
 
     def get_sensor_observation_by_id(self, station_name, sensor_id,
