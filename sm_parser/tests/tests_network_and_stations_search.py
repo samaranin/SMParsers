@@ -13,6 +13,7 @@ class TestSearch(unittest.TestCase):
         self.default_wrong_id = 125482
         self.default_sensor_id = 8
         self.default_sensor_name = "soil_moisture(m3m-3 * 100)_0.05m ThetaProbe ML2X"
+        self.additional_sensor_name = "soil_temperature(C)_0.00m-0.05m LI-COR Temperature Sensors"
 
     def tests_get_network_by_name(self):
         with self.assertRaises(ValueError):
@@ -150,6 +151,22 @@ class TestSearch(unittest.TestCase):
         sensor = self.ismn_parser.get_sensor_object_by_name(self.default_station_name, self.default_sensor_name)
         self.assertIsNotNone(sensor)
         self.assertIsInstance(sensor, dict)
+
+    def tests_get_sensor_type_and_depth_by_name(self):
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_sensor_type_and_depth_by_name("")
+
+        data = self.ismn_parser.get_sensor_type_and_depth_by_name(self.default_sensor_name)
+        self.assertIsNotNone(data)
+        self.assertIsInstance(data, dict)
+        self.assertEqual(data["sensor_type"], "soil_moisture")
+        self.assertEqual(data["sensor_depth"], "0.05m")
+
+        data = self.ismn_parser.get_sensor_type_and_depth_by_name(self.additional_sensor_name)
+        self.assertIsNotNone(data)
+        self.assertIsInstance(data, dict)
+        self.assertEqual(data["sensor_type"], "soil_temperature")
+        self.assertEqual(data["sensor_depth"], "0.00m-0.05m")
 
 
 if __name__ == "__main__":

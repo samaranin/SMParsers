@@ -1,4 +1,5 @@
 from sm_parser.parsers import ISMNDataParser
+import re
 
 
 if __name__ == "__main__":
@@ -32,6 +33,10 @@ if __name__ == "__main__":
     # full sensor data for station by name, also exists same method for ID
     print(f"Get all data for sensor \'{default_sensor_name}\' in \'{default_station_name}\' station")
     print(parser.get_sensor_object_by_name(default_station_name, default_sensor_name), end="\n\n")
+
+    # get type and depth data from sensor name
+    print(f"Get type and depth sensor \'{default_sensor_name}\'")
+    print(parser.get_sensor_type_and_depth_by_name(default_sensor_name), end="\n\n")
 
     # get observation for sensor on station in date range, also exists same method for ID
     print(f"Get observations for sensor \'{default_sensor_name}\' on \'{default_station_name}\' station "
