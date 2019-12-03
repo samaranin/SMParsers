@@ -30,7 +30,7 @@ if __name__ == "__main__":
     print("Get list of sensors names for station '" + default_station_name + "'")
     print(parser.get_sensors_names_list_for_station_by_name(default_station_name), end="\n\n")
 
-    # full sensor data for station by name, also exists same method for ID
+    # full sensor data for station by name
     print(f"Get all data for sensor \'{default_sensor_name}\' in \'{default_station_name}\' station")
     print(parser.get_sensor_object_by_name(default_station_name, default_sensor_name), end="\n\n")
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print(f"Get observations for sensor \'{default_sensor_name}\' on \'{default_station_name}\' station "
           f"(start date: \'{default_start_date}\' and end date: \'{default_end_date}\')")
 
-    print("  0.05m: ")
+    print("  Normalized: ")
     data = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
                                                  default_start_date, default_end_date)
     print("    {")
@@ -50,9 +50,9 @@ if __name__ == "__main__":
         print(f"      \"{key}\": {data[key]}")
     print("    }", end="\n\n")
 
-    print("  0.30m: ")
-    data2 = parser.get_sensor_observation_by_name(default_station_name, "soil_moisture(m3m-3 * 100)_0.30m ThetaProbe ML2X",
-                                                 default_start_date, default_end_date)
+    print("  Default: ")
+    data2 = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
+                                                  default_start_date, default_end_date)
     print("    {")
     for key in data2.keys():
         print(f"      \"{key}\": {data2[key]}")
