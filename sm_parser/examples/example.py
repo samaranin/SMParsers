@@ -30,7 +30,7 @@ if __name__ == "__main__":
     print("Get list of sensors names for station '" + default_station_name + "'")
     print(parser.get_sensors_names_list_for_station_by_name(default_station_name), end="\n\n")
 
-    # full sensor data for station by name, also exists same method for ID
+    # full sensor data for station by name
     print(f"Get all data for sensor \'{default_sensor_name}\' in \'{default_station_name}\' station")
     print(parser.get_sensor_object_by_name(default_station_name, default_sensor_name), end="\n\n")
 

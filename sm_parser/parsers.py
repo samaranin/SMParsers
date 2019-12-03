@@ -256,7 +256,7 @@ class ISMNDataParser:
         sensors_list = self.get_sensors_objects_list_for_station_by_name(station_name, start_date, end_date)
         return [sensor["variableName"] for sensor in sensors_list]
 
-    def get_sensor_object_by_id(self, station_name, sensor_id):
+    def get_sensor_objects_list_by_id(self, station_name, sensor_id):
         """
         Method to get sensor data by it`s ID
         :param station_name: string - station name where sensor placed
@@ -264,11 +264,7 @@ class ISMNDataParser:
         :return: dict - sensor object
         """
         sensors = self.get_sensors_objects_list_for_station_by_name(station_name)
-        for sensor in sensors:
-            if sensor["sensorId"] == str(sensor_id):
-                return sensor
-
-        raise ValueError("Sensor with ID " + sensor_id + " not found!")
+        return [sensor for sensor in sensors if sensor["sensorId"] == str(sensor_id)]
 
     def get_sensor_object_by_name(self, station_name, sensor_name):
         """

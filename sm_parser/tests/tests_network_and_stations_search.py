@@ -134,7 +134,7 @@ class TestSearch(unittest.TestCase):
         for sensor in sensors:
             self.assertIsInstance(sensor, str)
 
-    def tests_get_sensor_object_by_id(self):
+    def tests_get_sensor_objects_list_by_id(self):
         with self.assertRaises(ValueError):
             self.ismn_parser.get_sensor_object_by_id("", "")
 
