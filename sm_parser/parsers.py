@@ -258,7 +258,7 @@ class ISMNDataParser:
 
     def get_sensor_objects_list_by_id(self, station_name, sensor_id):
         """
-        Method to get sensor data by it`s ID
+        Method to get sensor objects list with same ID for station
         :param station_name: string - station name where sensor placed
         :param sensor_id: int - sensor ID for station
         :return: dict - sensor object

@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print(f"Get observations for sensor \'{default_sensor_name}\' on \'{default_station_name}\' station "
           f"(start date: \'{default_start_date}\' and end date: \'{default_end_date}\')")
 
-    print("  0.05m: ")
+    print("  Normalized: ")
     data = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
                                                  default_start_date, default_end_date)
     print("    {")
@@ -50,8 +50,8 @@ if __name__ == "__main__":
         print(f"      \"{key}\": {data[key]}")
     print("    }", end="\n\n")
 
-    print("  0.30m: ")
-    data2 = parser.get_sensor_observation_by_name(default_station_name, "soil_moisture(m3m-3 * 100)_0.30m ThetaProbe ML2X",
+    print("  Default: ")
+    data2 = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
                                                  default_start_date, default_end_date)
     print("    {")
     for key in data2.keys():
