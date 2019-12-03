@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     print("  Default: ")
     data2 = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
-                                                 default_start_date, default_end_date)
+                                                  default_start_date, default_end_date)
     print("    {")
     for key in data2.keys():
         print(f"      \"{key}\": {data2[key]}")
