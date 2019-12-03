@@ -38,11 +38,11 @@ if __name__ == "__main__":
     print(f"Get type and depth sensor \'{default_sensor_name}\'")
     print(parser.get_sensor_type_and_depth_by_name(default_sensor_name), end="\n\n")
 
-    # get observation for sensor on station in date range, also exists same method for ID
+    # get observation for sensor on station in date range by name
     print(f"Get observations for sensor \'{default_sensor_name}\' on \'{default_station_name}\' station "
           f"(start date: \'{default_start_date}\' and end date: \'{default_end_date}\')")
 
-    print("  Normalized: ")
+    print("  0.05m: ")
     data = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
                                                  default_start_date, default_end_date)
     print("    {")
@@ -50,10 +50,10 @@ if __name__ == "__main__":
         print(f"      \"{key}\": {data[key]}")
     print("    }", end="\n\n")
 
-    print("  Default: ")
-    data = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
-                                                 default_start_date, default_end_date, normalize=False)
+    print("  0.30m: ")
+    data2 = parser.get_sensor_observation_by_name(default_station_name, "soil_moisture(m3m-3 * 100)_0.30m ThetaProbe ML2X",
+                                                 default_start_date, default_end_date)
     print("    {")
-    for key in data.keys():
-        print(f"      \"{key}\": {data[key]}")
+    for key in data2.keys():
+        print(f"      \"{key}\": {data2[key]}")
     print("    }", end="\n\n")

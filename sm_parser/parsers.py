@@ -298,12 +298,12 @@ class ISMNDataParser:
         sensor_depth = re.search(r"(-?\d\.\d+[a-z]-?)+", sensor_name).group(0)
         return {"sensor_type": sensor_type, "sensor_depth": sensor_depth}
 
-    def get_sensor_observation_by_id(self, station_name, sensor_id,
-                                     start_date="2017/01/01", end_date="2017/12/31", normalize=True):
+    def get_sensor_observation_by_name(self, station_name, sensor_name,
+                                       start_date="2017/01/01", end_date="2017/12/31", normalize=True):
         """
         Method to get observation data for sensor in station by sensor ID
         :param station_name: string - station name
-        :param sensor_id: int - sensor ID
+        :param sensor_name: int - sensor name
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
         :param normalize: bool - use absolute values if True, otherwise - values * 100
@@ -320,8 +320,8 @@ class ISMNDataParser:
 
         # gather all data we need for request
         station_id = self.get_station_id_by_name(station_name)
-        sensor_object = self.get_sensor_object_by_id(station_name, sensor_id)
-        variable_id, depth_id = sensor_object["variableId"], sensor_object["depthId"]
+        sensor_object = self.get_sensor_object_by_name(station_name, sensor_name)
+        sensor_id, variable_id, depth_id = sensor_object["sensorId"], sensor_object["variableId"], sensor_object["depthId"]
 
         # preparing url for request
         request_url = self.DATA_URL + f"?station_id={station_id}&start={start_date}&end={end_date}&" \
@@ -341,17 +341,3 @@ class ISMNDataParser:
         observations = [float(obs) for obs in observation_data[1]]
         observations = [round(float(obs) / 100, 5) for obs in observation_data[1]] if normalize else observations
         return {"dates": observation_data[0], "observations": observations}
-
-    def get_sensor_observation_by_name(self, station_name, sensor_name,
-                                       start_date="2017/01/01", end_date="2017/12/31", normalize=True):
-        """
-        Method to get observation data for sensor in station by sensor name
-        :param station_name:  string - station name
-        :param sensor_name: string - sensor name
-        :param start_date: string - date format YYYY/MM/DD
-        :param end_date: string - date format YYYY/MM/DD
-        :param normalize: bool - use absolute values if True, otherwise - values * 100
-        :return: dict - {"dates": list of observation dates, "observation": list of observations}
-        """
-        sensor_id = self.get_sensor_object_by_name(station_name, sensor_name)["sensorId"]
-        return self.get_sensor_observation_by_id(station_name, sensor_id, start_date, end_date, normalize)
