@@ -17,7 +17,7 @@ class SMValidator:
             e_ground, e_satellite, e_model = metrics.tcol_error(ground_station_data,
                                                                 satellite_data_scaled, model_data_scaled)
 
-        print("Data was normalized" if normalize else "Data was not normalized")
+        print(f"Data was normalized: \"{normalize}\"")
         print("Error of ground station data estimated: {:.4f}".format(e_ground))
         print("Error of satellite data estimated: {:.4f}".format(e_satellite))
         print("Error of model data estimated: {:.4f}".format(e_model))
