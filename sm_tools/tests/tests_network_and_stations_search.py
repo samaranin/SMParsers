@@ -1,5 +1,5 @@
 import unittest
-from sm_parser.parsers import ISMNDataParser
+from sm_tools.parsers import ISMNDataParser
 
 
 class TestSearch(unittest.TestCase):

@@ -1,4 +1,4 @@
-from sm_parser.parsers import ISMNDataParser
+from sm_tools.parsers import ISMNDataParser
 
 
 if __name__ == "__main__":
@@ -50,9 +50,9 @@ if __name__ == "__main__":
     print("    }", end="\n\n")
 
     print("  Default: ")
-    data2 = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
-                                                  default_start_date, default_end_date, normalize=False)
+    data = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
+                                                 default_start_date, default_end_date, normalize=False)
     print("    {")
-    for key in data2.keys():
-        print(f"      \"{key}\": {data2[key]}")
+    for key in data.keys():
+        print(f"      \"{key}\": {data[key]}")
     print("    }", end="\n\n")
