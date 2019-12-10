@@ -1,6 +1,5 @@
 import pytesmo.scaling as scaling
 import pytesmo.metrics as metrics
-import numpy as np
 
 
 class SMValidator:
@@ -17,20 +16,17 @@ class SMValidator:
         :param scale: marker to add using or mean-standard deviation scaling for datasets
         :return: e_ground, e_satellite, e_model = estimated errors for all datasets
         """
-        try:
-            ground_station_data = np.array(ground_station_data)
-            satellite_data = np.array(satellite_data)
-            model_data = np.array(model_data)
-        except BaseException:
-            raise ValueError("Input data must be np.array or list with numbers!"
-                             "Check input data and try again.") from None
+        if len(ground_station_data) < 1 or len(satellite_data) < 1 or len(model_data) < 1:
+            raise ValueError("Parameters must contain at least one value!"
+                             "Check input data and try again.")
 
-        if not scale:
-            e_ground, e_satellite, e_model = metrics.tcol_error(ground_station_data, satellite_data, model_data)
-        else:
-            satellite_data_scaled = scaling.mean_std(satellite_data, ground_station_data)
-            model_data_scaled = scaling.mean_std(model_data, ground_station_data)
-            e_ground, e_satellite, e_model = metrics.tcol_error(ground_station_data,
-                                                                satellite_data_scaled, model_data_scaled)
+        if scale:
+            try:
+                satellite_data = scaling.mean_std(satellite_data, ground_station_data)
+                model_data = scaling.mean_std(model_data, ground_station_data)
+            except BaseException:
+                raise ValueError("Error while data scaling!"
+                                 "Input data must be np.array or list with numbers!"
+                                 "Check input data and try again.") from None
 
-        return e_ground, e_satellite, e_model
+        return metrics.tcol_error(ground_station_data, satellite_data, model_data)
