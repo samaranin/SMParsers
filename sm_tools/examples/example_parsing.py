@@ -42,8 +42,7 @@ if __name__ == "__main__":
           f"(start date: \'{default_start_date}\' and end date: \'{default_end_date}\')")
 
     for normalize in (True, False):
-
-        print(f"  Normalized: \'{normalize}\'")
+        print(f"  \'{'' if normalize else 'Not'}\' Normalized: ")
         data = parser.get_sensor_observation_by_name(default_station_name, default_sensor_name,
                                                      default_start_date, default_end_date, normalize=normalize)
         print("    {")

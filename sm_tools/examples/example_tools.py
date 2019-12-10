@@ -20,9 +20,9 @@ if __name__ == "__main__":
 
         print("Triple collocation errors: ")
         for scale in (True, False):
-            print(f"  With mean-standard deviation scaling: \'{scale}\'")
+            print(f"  \'{'With' if scale else 'Without'}\' mean-standard deviation scaling: ")
             e_ground, e_satellite, e_model = SMValidator.triple_collocation(data['ground_station'], data['satellite'],
                                                                             data['model'], scale=scale)
-            print(f"    Error of ground station data estimated: {e_ground:.4f}")
-            print(f"    Error of satellite data estimated: {e_satellite:.4f}")
-            print(f"    Error of model data estimated: {e_model:.4f}")
+            print(f"    Estimated error of ground station data: {e_ground:.4f}")
+            print(f"    Estimated error of satellite data estimated: {e_satellite:.4f}")
+            print(f"    Estimated error of model data estimated: {e_model:.4f}")
