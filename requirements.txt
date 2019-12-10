@@ -1,1 +1,4 @@
 requests
+pytesmo
+matplotlib
+numpy

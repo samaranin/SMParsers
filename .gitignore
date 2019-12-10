@@ -1,4 +1,4 @@
 .idea/
 venv/
-sm_parser/__pycache__/
-sm_parser/tests/__pycache__/
+sm_tools/__pycache__/
+sm_tools/tests/__pycache__/

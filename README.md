@@ -2,13 +2,16 @@
 
 Use this package to get data from ISMN servers without downloading archives.   
 
-Examples are placed inside ```sm_parser/examples/``` folder.   
+Examples are placed inside ```sm_tools/examples/``` folder.   
 
 ________
 #### Requirements
 ```text
-python 3.6+   
+python 3.6+
+numpy   
 requests
+pytesmo
+
 ```
 
 ______________
