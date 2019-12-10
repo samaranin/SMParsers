@@ -7,7 +7,7 @@ class TestInitialization(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestInitialization, self).__init__(*args, **kwargs)
 
-    def test_triple_collocation(self):
+    def tests_triple_collocation(self):
         with self.assertRaises(ValueError):
             SMValidator.triple_collocation('', '', '')
 
