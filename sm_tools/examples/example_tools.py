@@ -1,7 +1,28 @@
 from sm_tools.tools import SMValidator
-import numpy as np
+import json
+import glob
 
 
 if __name__ == "__main__":
+    default_data_files_list = glob.glob("data/*.json")
+
     print("Example of triple collocation validation: ")
-    SMValidator.triple_collocation(np.array([0.15, 0.12]), np.array([0.22, 0.19]), np.array([0.08, 0.1]))
+    for file_name in default_data_files_list:
+        print(f"\nGet dataset from file \'{file_name}\'", end="\n")
+        with open(file_name) as file:
+            data = json.loads(file.read())
+
+        print("  Extracted data: ")
+        print("    {")
+        for key, value in data.items():
+            print(f'      \'{key}\': \'{value}\'')
+        print("    }", end="\n")
+
+        print("Triple collocation errors: ")
+        for scale in (True, False):
+            print(f"  With mean-standard deviation scaling: \'{scale}\'")
+            e_ground, e_satellite, e_model = SMValidator.triple_collocation(data['ground_station'], data['satellite'],
+                                                                            data['model'], scale=scale)
+            print(f"    Error of ground station data estimated: {e_ground:.4f}")
+            print(f"    Error of satellite data estimated: {e_satellite:.4f}")
+            print(f"    Error of model data estimated: {e_model:.4f}")
