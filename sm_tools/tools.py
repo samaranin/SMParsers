@@ -1,5 +1,6 @@
 import pytesmo.scaling as scaling
 import pytesmo.metrics as metrics
+import numpy as np
 
 
 class SMValidator:
@@ -19,6 +20,15 @@ class SMValidator:
         if len(ground_station_data) < 1 or len(satellite_data) < 1 or len(model_data) < 1:
             raise ValueError("Parameters must contain at least one value!"
                              "Check input data and try again.")
+
+        try:
+            ground_station_data = np.array(ground_station_data)
+            satellite_data = np.array(satellite_data)
+            model_data = np.array(model_data)
+        except BaseException:
+            raise ValueError("Error while converting data to np.array!"
+                             "Input data must be np.array or list of numbers!"
+                             "Check input data and try again.") from None
 
         if scale:
             try:
