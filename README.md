@@ -7,7 +7,8 @@ Examples are placed inside ```sm_tools/examples/``` folder.
 ________
 #### Requirements
 ```text
-python 3.6+   
+python 3.6+
+numpy   
 requests
 pytesmo
 
