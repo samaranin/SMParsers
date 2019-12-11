@@ -55,17 +55,6 @@ def triple_collocation(ground_station_data, satellite_data, model_data, scale=Tr
 
 
 @__arguments_validator
-def aad(ground_station_data, model_data):
-    """
-    Wrapper for pytesmo.metrics.RSS - method to get average absolute deviation
-    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
-    :param model_data: numpy.ndarray - soil moisture data from math model
-    :return aad: float - mean absolute deviation
-    """
-    return metrics.aad(ground_station_data, model_data)
-
-
-@__arguments_validator
 def bias(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.bias - method to get difference of the mean values
@@ -74,6 +63,39 @@ def bias(ground_station_data, model_data):
     :return bias: float -- mean(ground_station_data) - mean(model_data)
     """
     return metrics.bias(ground_station_data, model_data)
+
+
+@__arguments_validator
+def average_absolute_deviation(ground_station_data, model_data):
+    """
+    Wrapper for pytesmo.metrics.RSS - method to get average absolute deviation
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :return aad: float - average absolute deviation
+    """
+    return metrics.aad(ground_station_data, model_data)
+
+
+@__arguments_validator
+def median_absolute_deviation(ground_station_data, model_data):
+    """
+    Wrapper for pytesmo.metrics.mad - method to get median absolute deviation
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :return mad: float - median absolute deviation
+    """
+    return metrics.mad(ground_station_data, model_data)
+
+
+@__arguments_validator
+def nash_sutcliffe_coefficient(ground_station_data, model_data):
+    """
+    Wrapper for pytesmo.metrics.nash_sutcliffe - method to get Nash Sutcliffe model efficiency coefficient E
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :return E: float - Nash Sutcliffe model efficiency coefficient E
+    """
+    return metrics.nash_sutcliffe(ground_station_data, model_data)
 
 
 @__arguments_validator
@@ -89,51 +111,6 @@ def index_of_agreement(ground_station_data, model_data):
 
 
 @__arguments_validator
-def mad(ground_station_data, model_data):
-    """
-    Wrapper for pytesmo.metrics.mad - method to get median absolute deviation
-    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
-    :param model_data: numpy.ndarray - soil moisture data from math model
-    :return mad: float - median absolute deviation
-    """
-    return metrics.mad(ground_station_data, model_data)
-
-
-@__arguments_validator
-def mse(ground_station_data, model_data):
-    """
-    Wrapper for pytesmo.metrics.mse - method to get mean square error
-    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
-    :param model_data: numpy.ndarray - soil moisture data from math model
-    :return {'mse': mse, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}: dict - mse and it`s components
-    """
-    mse_value, mse_corr, mse_bias, mse_var = metrics.mse(ground_station_data, model_data, len(ground_station_data) - 1)
-    return {'mse': mse_value, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}
-
-
-@__arguments_validator
-def nash_sutcliffe(ground_station_data, model_data):
-    """
-    Wrapper for pytesmo.metrics.nash_sutcliffe - method to get Nash Sutcliffe model efficiency coefficient E
-    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
-    :param model_data: numpy.ndarray - soil moisture data from math model
-    :return E: float - Nash Sutcliffe model efficiency coefficient E
-    """
-    return metrics.nash_sutcliffe(ground_station_data, model_data)
-
-
-@__arguments_validator
-def nrmsd(ground_station_data, model_data):
-    """
-    Wrapper for pytesmo.metrics.nrmsd - method to get normalized root-mean-square deviation (nRMSD)
-    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
-    :param model_data: numpy.ndarray - soil moisture data from math model
-    :return nrmsd: float – Normalized root-mean-square deviation (nRMSD)
-    """
-    return metrics.nrmsd(ground_station_data, model_data)
-
-
-@__arguments_validator
 def pearson_correlation(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.pearsonr - method to get Pearson correlation coefficient
@@ -144,18 +121,6 @@ def pearson_correlation(ground_station_data, model_data):
     """
     r, p_value = metrics.pearsonr(ground_station_data, model_data)
     return {'r': r, 'p_value': p_value}
-
-
-@__arguments_validator
-def rmsd(ground_station_data, model_data):
-    """
-    Wrapper for pytesmo.metrics.rmsd - method to get root-mean-square deviation
-    and the p-value for testing non-correlation
-    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
-    :param model_data: numpy.ndarray - soil moisture data from math model
-    :return rmsd: float -  root-mean-square deviation
-    """
-    return metrics.rmsd(ground_station_data, model_data, len(ground_station_data) - 1)
 
 
 @__arguments_validator
@@ -173,6 +138,29 @@ def spearman_correlation(ground_station_data, model_data):
 
 
 @__arguments_validator
+def rmsd(ground_station_data, model_data):
+    """
+    Wrapper for pytesmo.metrics.rmsd - method to get root-mean-square deviation
+    and the p-value for testing non-correlation
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :return rmsd: float -  root-mean-square deviation
+    """
+    return metrics.rmsd(ground_station_data, model_data, len(ground_station_data) - 1)
+
+
+@__arguments_validator
+def nrmsd(ground_station_data, model_data):
+    """
+    Wrapper for pytesmo.metrics.nrmsd - method to get normalized root-mean-square deviation (nRMSD)
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :return nrmsd: float – Normalized root-mean-square deviation (nRMSD)
+    """
+    return metrics.nrmsd(ground_station_data, model_data)
+
+
+@__arguments_validator
 def ubrmsd(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.ubrmsd - method to get unbiased root-mean-square deviation (uRMSD)
@@ -182,6 +170,18 @@ def ubrmsd(ground_station_data, model_data):
     :return ubrmsd: float - unbiased root-mean-square deviation (uRMSD)
     """
     return metrics.ubrmsd(ground_station_data, model_data, len(ground_station_data) - 1)
+
+
+@__arguments_validator
+def mean_square_error(ground_station_data, model_data):
+    """
+    Wrapper for pytesmo.metrics.mse - method to get mean square error
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :return {'mse': mse, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}: dict - mse and it`s components
+    """
+    mse_value, mse_corr, mse_bias, mse_var = metrics.mse(ground_station_data, model_data, len(ground_station_data) - 1)
+    return {'mse': mse_value, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}
 
 
 @__arguments_validator
