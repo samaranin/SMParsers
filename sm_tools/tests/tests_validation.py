@@ -1,5 +1,5 @@
 import unittest
-from sm_tools.tools import SMValidator
+from sm_tools.validation_tools import *
 
 
 class TestInitialization(unittest.TestCase):
@@ -9,12 +9,12 @@ class TestInitialization(unittest.TestCase):
 
     def tests_triple_collocation(self):
         with self.assertRaises(ValueError):
-            SMValidator.triple_collocation('', '', '')
+            triple_collocation('', '', '')
 
         with self.assertRaises(ValueError):
-            SMValidator.triple_collocation([], [], [])
+            triple_collocation([], [], [])
 
-        for error in SMValidator.triple_collocation([0.1, 0.08], [0.2, 0.18], [0.04, 0.03]):
+        for error in triple_collocation([0.1, 0.08], [0.2, 0.18], [0.04, 0.03]):
             self.assertEqual(error < 0.0001, True)
 
 
