@@ -1,21 +1,30 @@
 import unittest
-from sm_tools.validation_tools import *
+from sm_tools import validation_tools
 
 
 class TestInitialization(unittest.TestCase):
+    EPSILON = 0.0001
+    DEFAULT_DATA = [0.1, 0.08, 0.12]
 
     def __init__(self, *args, **kwargs):
         super(TestInitialization, self).__init__(*args, **kwargs)
 
     def tests_triple_collocation(self):
         with self.assertRaises(ValueError):
-            triple_collocation('', '', '')
+            validation_tools.triple_collocation('', '', '')
 
         with self.assertRaises(ValueError):
-            triple_collocation([], [], [])
+            validation_tools.triple_collocation([], [], [])
 
-        for error in triple_collocation([0.1, 0.08], [0.2, 0.18], [0.04, 0.03]):
-            self.assertEqual(error < 0.0001, True)
+        error_data = validation_tools.triple_collocation(self.DEFAULT_DATA, self.DEFAULT_DATA, self.DEFAULT_DATA)
+        self.assertIsInstance(error_data, dict)
+        for value in error_data.values():
+            self.assertEqual(value < 0.0001, True)
+
+    def tests_bias(self):
+        bias = validation_tools.bias(self.DEFAULT_DATA, self.DEFAULT_DATA)
+        print(bias, type(bias))
+        self.assertEqual(bias < self.EPSILON, True)
 
 
 if __name__ == "__main__":

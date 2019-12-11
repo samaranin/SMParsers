@@ -14,17 +14,22 @@ def __arguments_validator(func):
     def validator(*args, **kwargs):
         converted_args = []
         for arg in args:
+            # check if argument has at least one element
             if len(arg) < 1:
                 raise ValueError("Parameters must be np.ndarray or list and contain at least one value!"
                                  "Check input data and try again.")
 
+            # and trying to convert argument to array
             try:
                 converted_arg = np.array(arg)
             except BaseException:
                 raise ValueError("Error while converting argument to nd.array!"
                                  "Parameters must be np.ndarray or list and contain at least one value!"
                                  "Check input data and try again.")
+
+            # adding argument to new arguments list
             converted_args.append(converted_arg)
+
         return func(*converted_args, **kwargs)
 
     return validator
