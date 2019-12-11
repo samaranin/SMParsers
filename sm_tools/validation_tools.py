@@ -133,6 +133,7 @@ def spearman_correlation(ground_station_data, model_data):
     :return {'r': spearman.correlation, 'p_value': spearman.pvalue}: dict - Spearman correlation coefficient
     and the two-sided p-value for a hypothesis test whose null hypothesis is that two sets of data are uncorrelated
     """
+    # metrics.spearmanr returns named tuple with 'correlation' and 'pvalue' fields
     spearman = metrics.spearmanr(ground_station_data, model_data)
     return {'r': spearman.correlation, 'p_value': spearman.pvalue}
 
@@ -196,11 +197,14 @@ def get_all_validation_values(ground_station_data, model_data, satellite_data=No
     for datasets in triple collocation (default = True)
     :return: dict - {validation_method: value}
     """
+    # some hack to get this function name
+    this_function_name = sys._getframe().f_code.co_name
+
     # get all validation functions in this module
     # except private decorator and current function
     # and save it to dict
     validators = {name: obj for name, obj in inspect.getmembers(sys.modules[__name__])
-                  if inspect.isfunction(obj) and "__" not in name and name != "get_all_validation_values"}
+                  if inspect.isfunction(obj) and "__" not in name and name != this_function_name}
 
     # generation new dict for storing validation results
     validation_values = dict()
