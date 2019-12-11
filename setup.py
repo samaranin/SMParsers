@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='sm_tools',
-    version='0.2',
+    version='0.3.0',
     packages=find_packages(exclude=['tests*', 'examples']),
     install_requires=required,
     license='MIT',
