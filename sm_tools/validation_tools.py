@@ -39,8 +39,8 @@ def triple_collocation(ground_station_data, satellite_data, model_data, scale=Tr
     :param ground_station_data: numpy.ndarray - soil moisture observation from ground station or x in documentation
     :param satellite_data: numpy.ndarray - soil moisture data from satellite image or y in documentation
     :param model_data: numpy.ndarray - soil moisture data from math model or z in documentation
-    :param scale: marker to add using or mean-standard deviation scaling for datasets
-    :return (e_ground, e_satellite, e_model): tuple - estimated errors for all input datasets
+    :param scale: marker to add using or mean-standard deviation scaling for datasets (default = True)
+    :return {'e_ground': e_ground, 'e_satellite': e_satellite, 'e_model': e_model}: dict - estimated errors
     """
     if scale:
         try:
@@ -50,7 +50,8 @@ def triple_collocation(ground_station_data, satellite_data, model_data, scale=Tr
             raise ValueError("Error while data scaling!"
                              "Check input data and try again.") from None
 
-    return metrics.tcol_error(ground_station_data, satellite_data, model_data)
+    e_ground, e_satellite, e_model = metrics.tcol_error(ground_station_data, satellite_data, model_data)
+    return {'e_ground': e_ground, 'e_satellite': e_satellite, 'e_model': e_model}
 
 
 @__arguments_validator
@@ -104,9 +105,10 @@ def mse(ground_station_data, model_data):
     Wrapper for pytesmo.metrics.mse - method to get mean square error
     :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
     :param model_data: numpy.ndarray - soil moisture data from math model
-    :return (mse, mse_corr, mse_bias, mse var): tuple - mse and it`s components
+    :return {'mse': mse, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}: dict - mse and it`s components
     """
-    return metrics.mse(ground_station_data, model_data, len(ground_station_data))
+    mse_value, mse_corr, mse_bias, mse_var = metrics.mse(ground_station_data, model_data, len(ground_station_data) - 1)
+    return {'mse': mse_value, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}
 
 
 @__arguments_validator
@@ -138,9 +140,10 @@ def pearson_correlation(ground_station_data, model_data):
     and the p-value for testing non-correlation
     :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
     :param model_data: numpy.ndarray - soil moisture data from math model
-    :return (r, p_value): tuple - Pearson’s correlation coefficient and 2 tailed p-value
+    :return {'r': r, 'p_value': p_value}: dict - Pearson’s correlation coefficient and 2 tailed p-value
     """
-    return metrics.pearsonr(ground_station_data, model_data)
+    r, p_value = metrics.pearsonr(ground_station_data, model_data)
+    return {'r': r, 'p_value': p_value}
 
 
 @__arguments_validator
@@ -162,10 +165,11 @@ def spearman_correlation(ground_station_data, model_data):
     and the p-value to test for non-correlation
     :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
     :param model_data: numpy.ndarray - soil moisture data from math model
-    :return (rho, p_value): tuple - Spearman correlation coefficient
+    :return {'r': spearman.correlation, 'p_value': spearman.pvalue}: dict - Spearman correlation coefficient
     and the two-sided p-value for a hypothesis test whose null hypothesis is that two sets of data are uncorrelated
     """
-    return metrics.spearmanr(ground_station_data, model_data)
+    spearman = metrics.spearmanr(ground_station_data, model_data)
+    return {'r': spearman.correlation, 'p_value': spearman.pvalue}
 
 
 @__arguments_validator
@@ -182,20 +186,31 @@ def ubrmsd(ground_station_data, model_data):
 
 @__arguments_validator
 def get_all_validation_values(ground_station_data, model_data, satellite_data=None, scale=True):
+    """
+    Method to use all validation methods in this module for ground station and model predicted data
+    To make triple collocation satellite data needed
+    :param ground_station_data: numpy.ndarray - soil moisture observation data from ground station
+    :param model_data: numpy.ndarray - soil moisture data from math model
+    :param satellite_data: numpy.ndarray - (optional) soil moisture data from math model (default = None)
+    :param scale: bool - (optional) marker to add using or mean-standard deviation scaling
+    for datasets in triple collocation (default = True)
+    :return: dict - {validation_method: value}
+    """
     # get all validation functions in this module
     # except private decorator and current function
     # and save it to dict
     validators = {name: obj for name, obj in inspect.getmembers(sys.modules[__name__])
                   if inspect.isfunction(obj) and "__" not in name and name != "get_all_validation_values"}
 
+    # generation new dict for storing validation results
     validation_values = dict()
     for name, func in validators.items():
+        # if validation method is not triple collocation - get validation values
         if name != "triple_collocation":
             validation_values[name] = func(ground_station_data, model_data)
         else:
-            if satellite_data is not None:
-                validation_values[name] = func(ground_station_data, satellite_data, model_data, scale=scale)
-            else:
-                validation_values[name] = "Can not make triple collocation on two datasets!"
+            # if validation method is triple collocation and we have satellite data in parameters - using validation
+            validation_values[name] = func(ground_station_data, satellite_data, model_data, scale=scale) \
+                if satellite_data is not None else "Can not make triple collocation on two datasets!"
 
     return validation_values
