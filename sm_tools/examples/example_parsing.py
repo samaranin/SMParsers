@@ -25,6 +25,11 @@ if __name__ == '__main__':
     print(f'Get all data for station \'{default_station_name}\'')
     print(parser.get_station_object_by_name(default_station_name), end='\n\n')
 
+    print(f'Get station observation time for \'{default_station_name}\'')
+    print(parser.get_station_sensors_metadata_list_by_name(default_station_name,
+                                                           start_date="2000/01/01",
+                                                           end_date=default_end_date), end='\n\n')
+
     # list of sensors names by station name, also exists same method for ID
     print('Get list of sensors names for station '' + default_station_name + ''')
     print(parser.get_sensors_names_list_for_station_by_name(default_station_name), end='\n\n')
