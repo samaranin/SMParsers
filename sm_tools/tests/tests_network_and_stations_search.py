@@ -76,7 +76,35 @@ class TestSearch(unittest.TestCase):
         self.assertIsInstance(station_id, int)
         self.assertEqual(station_id, self.default_station_id)
 
-    def get_sensors_objects_list_for_station_by_id(self):
+    def tests_get_station_sensors_metadata_list_by_id(self):
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_station_sensors_metadata_list_by_id(self.default_station_id, "", "")
+
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_station_sensors_metadata_list_by_id(self.default_wrong_id, "", "")
+
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_station_sensors_metadata_list_by_id("")
+
+        metadata = self.ismn_parser.get_station_sensors_metadata_list_by_id(self.default_station_id)
+        self.assertIsNotNone(metadata)
+        self.assertIsInstance(metadata, dict)
+
+    def tests_get_station_sensors_metadata_list_by_name(self):
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_station_sensors_metadata_list_by_name(self.default_station_id, "", "")
+
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_station_sensors_metadata_list_by_name(self.default_wrong_id, "", "")
+
+        with self.assertRaises(ValueError):
+            self.ismn_parser.get_station_sensors_metadata_list_by_name("")
+
+        metadata = self.ismn_parser.get_station_sensors_metadata_list_by_name(self.default_station_name)
+        self.assertIsNotNone(metadata)
+        self.assertIsInstance(metadata, dict)
+
+    def tests_get_sensors_objects_list_for_station_by_id(self):
         with self.assertRaises(ValueError):
             self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_station_id, "", "")
 
@@ -86,7 +114,7 @@ class TestSearch(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.ismn_parser.get_sensors_objects_list_for_station_by_id("")
 
-        sensors = self.ismn_parser.get_station_id_by_name(self.default_station_id)
+        sensors = self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_station_id)
         self.assertIsNotNone(sensors)
         self.assertIsInstance(sensors, list)
         for sensor in sensors:
@@ -110,7 +138,7 @@ class TestSearch(unittest.TestCase):
             self.ismn_parser.get_sensors_names_list_for_station_by_id(self.default_station_id, "", "")
 
         with self.assertRaises(ValueError):
-            self.ismn_parser.get_sensors_objects_list_for_station_by_id(self.default_wrong_id, "", "")
+            self.ismn_parser.get_sensors_names_list_for_station_by_id(self.default_wrong_id, "", "")
 
         with self.assertRaises(ValueError):
             self.ismn_parser.get_sensors_names_list_for_station_by_id("")
