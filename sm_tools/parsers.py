@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 import re
+import urllib.parse
 
 
 class ISMNDataParser:
@@ -187,14 +188,14 @@ class ISMNDataParser:
         station = self.get_station_object_by_name(station_name)
         return int(station["stationID"])
 
-    def get_sensors_objects_list_for_station_by_id(self, station_id,
-                                                   start_date="2017/01/01", end_date="2017/12/31"):
+    def get_station_sensors_metadata_list_by_id(self, station_id,
+                                                start_date="2017/01/01", end_date="2017/12/31"):
         """
         Method to get sensors objects list for current station by station ID
         :param station_id: int or string - station ID
         :param start_date: string - date format YYYY/MM/DD
         :param end_date: string - date format YYYY/MM/DD
-        :return: list of dicts - sensors objects
+        :return: dict - sensors list and station metadata for this period
         """
         try:
             start_date_object = datetime.datetime.strptime(start_date, '%Y/%m/%d')
@@ -215,10 +216,34 @@ class ISMNDataParser:
 
         # return parsed network data
         try:
-            return json.loads(request.content.decode("utf-8"))["variables"]
+            return json.loads(request.content.decode("utf-8"))
         except json.decoder.JSONDecodeError:
             raise ValueError("Error while server response processing! "
                              "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
+
+    def get_station_sensors_metadata_list_by_name(self, station_name,
+                                                  start_date="2017/01/01", end_date="2017/12/31"):
+        """
+        Method to get sensors objects list for current station by station name
+        :param station_name: string - station name
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: list of dicts - sensors objects
+        """
+        station_id = self.get_station_id_by_name(station_name)
+        return self.get_station_sensors_metadata_list_by_id(station_id, start_date, end_date)
+
+    def get_sensors_objects_list_for_station_by_id(self, station_id,
+                                                   start_date="2017/01/01", end_date="2017/12/31"):
+        """
+        Method to get sensors objects list for current station by station ID
+        :param station_id: int or string - station ID
+        :param start_date: string - date format YYYY/MM/DD
+        :param end_date: string - date format YYYY/MM/DD
+        :return: list of dicts - sensors objects
+        """
+        return self.get_station_sensors_metadata_list_by_id(station_id,
+                                                            start_date=start_date, end_date=end_date)["variables"]
 
     def get_sensors_objects_list_for_station_by_name(self, station_name,
                                                      start_date="2017/01/01", end_date="2017/12/31"):
