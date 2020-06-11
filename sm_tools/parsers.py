@@ -2,7 +2,6 @@ import requests
 import json
 import datetime
 import re
-import urllib.parse
 
 
 class ISMNDataParser:
@@ -31,14 +30,14 @@ class ISMNDataParser:
         # set requests timeout
         self.request_timeout = 20
         # fetching all networks data on object initialization
-        self.__networks_objects_list = self.__get_networks_data()
+        self.__networks_objects_list = self._get_networks_data()
         # getting all stations data from all networks
-        self.__stations_objects_list = self.__get_stations_data()
+        self.__stations_objects_list = self._get_stations_data()
 
     def __del__(self):
         self.__session.close()
 
-    def __get_networks_data(self):
+    def _get_networks_data(self):
         """
         Method to get all networks objects
         :return: list of dicts - networks with all inner data (stations, etc) or None
@@ -56,7 +55,7 @@ class ISMNDataParser:
             raise ValueError("Error while server response processing! "
                              "Check input parameters or https://www.geo.tuwien.ac.at/ server status.") from None
 
-    def __get_stations_data(self):
+    def _get_stations_data(self):
         """
         Method to get all station objects form all networks
 
