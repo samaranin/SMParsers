@@ -5,7 +5,7 @@ import inspect
 import sys
 
 
-def __arguments_validator(func):
+def _arguments_validator(func):
     """
     Method to check and convert function parameters to np.ndarray
     :param func: function to check parameters
@@ -35,7 +35,7 @@ def __arguments_validator(func):
     return validator
 
 
-@__arguments_validator
+@_arguments_validator
 def triple_collocation(ground_station_data, satellite_data, model_data, scale=True):
     """
     Wrapper for pytesmo.metrics.tcol_error to estimate the standard deviation of epsilon(error)
@@ -59,7 +59,7 @@ def triple_collocation(ground_station_data, satellite_data, model_data, scale=Tr
     return {'e_ground': e_ground, 'e_satellite': e_satellite, 'e_model': e_model}
 
 
-@__arguments_validator
+@_arguments_validator
 def bias(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.bias - method to get difference of the mean values
@@ -70,7 +70,7 @@ def bias(ground_station_data, model_data):
     return metrics.bias(ground_station_data, model_data)
 
 
-@__arguments_validator
+@_arguments_validator
 def average_absolute_deviation(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.RSS - method to get average absolute deviation
@@ -81,7 +81,7 @@ def average_absolute_deviation(ground_station_data, model_data):
     return metrics.aad(ground_station_data, model_data)
 
 
-@__arguments_validator
+@_arguments_validator
 def median_absolute_deviation(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.mad - method to get median absolute deviation
@@ -92,7 +92,7 @@ def median_absolute_deviation(ground_station_data, model_data):
     return metrics.mad(ground_station_data, model_data)
 
 
-@__arguments_validator
+@_arguments_validator
 def nash_sutcliffe_coefficient(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.nash_sutcliffe - method to get Nash Sutcliffe model efficiency coefficient E
@@ -103,7 +103,7 @@ def nash_sutcliffe_coefficient(ground_station_data, model_data):
     return metrics.nash_sutcliffe(ground_station_data, model_data)
 
 
-@__arguments_validator
+@_arguments_validator
 def index_of_agreement(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.index_of_agreement - method to get index of agreement between two vars
@@ -115,7 +115,7 @@ def index_of_agreement(ground_station_data, model_data):
     return metrics.index_of_agreement(ground_station_data, model_data)
 
 
-@__arguments_validator
+@_arguments_validator
 def pearson_correlation(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.pearsonr - method to get Pearson correlation coefficient
@@ -128,7 +128,7 @@ def pearson_correlation(ground_station_data, model_data):
     return {'r': r, 'p_value': p_value}
 
 
-@__arguments_validator
+@_arguments_validator
 def spearman_correlation(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.spearmanr - method to get Spearman rank-order correlation coefficient
@@ -143,7 +143,7 @@ def spearman_correlation(ground_station_data, model_data):
     return {'r': spearman.correlation, 'p_value': spearman.pvalue}
 
 
-@__arguments_validator
+@_arguments_validator
 def rmsd(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.rmsd - method to get root-mean-square deviation
@@ -152,10 +152,10 @@ def rmsd(ground_station_data, model_data):
     :param model_data: numpy.ndarray - soil moisture data from math model
     :return rmsd: float -  root-mean-square deviation
     """
-    return metrics.rmsd(ground_station_data, model_data, len(ground_station_data) - 1)
+    return metrics.rmsd(ground_station_data, model_data, 0)
 
 
-@__arguments_validator
+@_arguments_validator
 def nrmsd(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.nrmsd - method to get normalized root-mean-square deviation (nRMSD)
@@ -166,7 +166,7 @@ def nrmsd(ground_station_data, model_data):
     return metrics.nrmsd(ground_station_data, model_data)
 
 
-@__arguments_validator
+@_arguments_validator
 def ubrmsd(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.ubrmsd - method to get unbiased root-mean-square deviation (uRMSD)
@@ -175,10 +175,10 @@ def ubrmsd(ground_station_data, model_data):
     :param model_data: numpy.ndarray - soil moisture data from math model
     :return ubrmsd: float - unbiased root-mean-square deviation (uRMSD)
     """
-    return metrics.ubrmsd(ground_station_data, model_data, len(ground_station_data) - 1)
+    return metrics.ubrmsd(ground_station_data, model_data, 0)
 
 
-@__arguments_validator
+@_arguments_validator
 def mean_square_error(ground_station_data, model_data):
     """
     Wrapper for pytesmo.metrics.mse - method to get mean square error
@@ -186,11 +186,11 @@ def mean_square_error(ground_station_data, model_data):
     :param model_data: numpy.ndarray - soil moisture data from math model
     :return {'mse': mse, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}: dict - mse and it`s components
     """
-    mse_value, mse_corr, mse_bias, mse_var = metrics.mse(ground_station_data, model_data, len(ground_station_data) - 1)
+    mse_value, mse_corr, mse_bias, mse_var = metrics.mse(ground_station_data, model_data, 0)
     return {'mse': mse_value, 'mse_corr': mse_corr, 'mse_bias': mse_bias, 'mse_var': mse_var}
 
 
-@__arguments_validator
+@_arguments_validator
 def get_all_validation_values(ground_station_data, model_data, satellite_data=None, scale=True):
     """
     Method to use all validation methods in this module for ground station and model predicted data
@@ -209,7 +209,7 @@ def get_all_validation_values(ground_station_data, model_data, satellite_data=No
     # except private decorator and current function
     # and save it to dict
     validators = {name: obj for name, obj in inspect.getmembers(sys.modules[__name__])
-                  if inspect.isfunction(obj) and "__" not in name and name != this_function_name}
+                  if inspect.isfunction(obj) and "_validator" not in name and name != this_function_name}
 
     # generation new dict for storing validation results
     validation_values = dict()
