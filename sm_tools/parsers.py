@@ -6,7 +6,7 @@ import re
 
 class ISMNDataParser:
     """
-    Class for parsing data from ISMN - https://www.geo.tuwien.ac.at/insitu/data_viewer/
+    Class for parsing data from ISMN - https://ismn.earth/en/dataviewer/
     """
 
     # default headers for request if there was no headers passed to constructor
@@ -14,13 +14,13 @@ class ISMNDataParser:
                        "Accept-Language": "en-US,en;q=0"}
 
     # url to get all networks data
-    NETWORKS_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/station_details/network_station_details.json"
+    NETWORKS_URL = "https://ismn.earth/en/dataviewer/get_networks_station_info/"
 
     # base url for sensors data requests
-    SENSOR_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_get_variable_list.php"
+    SENSOR_URL = "https://ismn.earth/en/dataviewer/dataviewer_get_variable_list/"
 
     # base url for observations data requests
-    DATA_URL = "https://www.geo.tuwien.ac.at/insitu/data_viewer/server/dataviewer/dataviewer_load_variable.php"
+    DATA_URL = "https://ismn.earth/en/dataviewer/dataviewer_load_variable/"
 
     def __init__(self, headers=None):
         # creating new session on object creation
